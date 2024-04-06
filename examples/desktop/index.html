@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html, body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+
+      --token-color-foreground: #000000;
+      --token-color-background: #ffffff;
+      --token-color-highlight: #a9c2ea;
+
+      --token-color-system: #f0f0f0;
+      --token-color-border: #e0e0e0;
+    }
+  </style>
+</head>
+
+<body>
+  <desktop-app></desktop-app>
+
+  <script type="importmap">{
+    "imports": {
+      "vena": "../../build/runtime.js"
+    }
+  }</script>
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>

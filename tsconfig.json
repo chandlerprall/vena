@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "noEmit": false,
+    "outDir": "./build",
+    "sourceMap": true,
+    "declaration": true,
+
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true
+  },
+  "files": [
+    "src/runtime.ts"
+  ]
+}

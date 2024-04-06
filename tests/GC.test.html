@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+loading...
+
+<script type="module">
+	import { element, Signal, registerComponent } from '../build/runtime.js';
+
+	registerComponent('gc-debugger', ({ render, attributes }) => {
+		render`<slot></slot>`;
+		// attributes.value.as(value => value());
+	});
+
+
+	document.body.innerText = '';
+
+	const lorum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+
+	makeSection('element', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger>${makeString(100000)}</gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing static object', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger value=${makeObject(5)}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing static array', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger value=${makeArray(5)}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing static handler', () => {
+		for (let i = 0; i < 10000; i++) {
+			const handler = () => {};
+			handler.also = makeObject(5);
+			element`<gc-debugger onclick=${handler}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing static function', () => {
+		for (let i = 0; i < 10000; i++) {
+			const handler = () => {};
+			handler.also = makeObject(5);
+			element`<gc-debugger value=${handler}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing number signal', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger value=${new Signal(i)}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing object signal', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger value=${new Signal(makeObject(5))}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing array signal', () => {
+		for (let i = 0; i < 10000; i++) {
+			element`<gc-debugger value=${new Signal(makeArray(5))}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing handler signal', () => {
+		for (let i = 0; i < 10000; i++) {
+			const handler = () => {console.log('here')};
+			handler.also = makeObject(5);
+			element`<gc-debugger onclick=${new Signal(handler)}></gc-debugger>`;
+		}
+	});
+
+	makeSection('element passing function signal', () => {
+		for (let i = 0; i < 10000; i++) {
+			const handler = () => {};
+			handler.also = makeObject(5);
+			element`<gc-debugger value=${handler}></gc-debugger>`;
+		}
+	});
+
+	makeSection('render', () => {
+		registerComponent('render-test', ({ render }) => {
+			const data = makeObject(5);
+			render`<gc-debugger value=${data}></gc-debugger>`;
+		});
+
+		for (let i = 0; i < 10000; i++) {
+			element`<render-test></render-test>`;
+		}
+	});
+
+	makeSection('render attributes', () => {
+		registerComponent('render-attributes', ({ render, attributes }) => {
+			render`<gc-debugger>${attributes.val} - ${attributes.ue}</gc-debugger>`;
+		});
+
+		for (let i = 0; i < 10000; i++) {
+			element`<render-attributes val=${makeObject(5)} ue=${new Signal(makeArray(3))}></render-attributes>`;
+		}
+	});
+
+	makeSection('render context', () => {
+		registerComponent('render-context', ({ render, context }) => {
+			context.data = makeObject(5);
+			render`<gc-debugger></gc-debugger>`;
+		});
+
+		for (let i = 0; i < 10000; i++) {
+			element`<render-context></render-context>`;
+		}
+	});
+
+	makeSection('render refs', () => {
+		registerComponent('render-refs', ({ render, refs }) => {
+			render`<gc-debugger id="hello"></gc-debugger>`;
+		});
+
+		for (let i = 0; i < 10000; i++) {
+			element`<render-refs></render-refs>`;
+		}
+	});
+
+	function makeSection(cta, action) {
+		const status = new Signal();
+		const section = element`<section>
+			<button onclick=${() => {
+			status.value = 'executing';
+			setTimeout(async () => {
+				try {
+					await action();
+					status.value = 'done';
+				} catch (e) {
+					status.value = `error: ${e.message}`;
+					console.error(e);
+				}
+			}, 10);
+		}}>${cta}</button>
+			${status}
+		</section>`;
+		document.body.appendChild(section);
+	}
+
+	function makeString(minsize) {
+		let length = lorum.length;
+		let string = lorum;
+		while (length < minsize) {
+			string += lorum;
+			length += lorum.length;
+		}
+		return string;
+	}
+
+	function makeObject(widthAndDepth) {
+		const obj = {};
+		for (let i = 0; i < widthAndDepth; i++) {
+			obj[i] = makeObject(widthAndDepth - 1);
+		}
+		return obj;
+	}
+
+	function makeArray(widthAndDepth) {
+		const arr = [];
+		for (let i = 0; i < widthAndDepth; i++) {
+			arr.push(makeArray(widthAndDepth - 1));
+		}
+		return arr;
+	}
+</script>
+
+</body>
+</html>
