@@ -40,12 +40,16 @@ export declare class Signal<ValueType = unknown> {
 export declare const html: (args_0: TemplateStringsArray, ...args_1: any[]) => ContainedNodeArray;
 export declare const element: (args_0: TemplateStringsArray, ...args_1: any[]) => HTMLElement;
 type StringWithHyphen = `${string}-${string}`;
+type ComponentState = <T>(initialState: T) => {
+    [key in keyof T]: Signal<T[key]>;
+};
 type ComponentDefinitionFn = (options: {
     element: HTMLElement;
     render: (strings: TemplateStringsArray, ...rest: any[]) => void;
     refs: Record<string, Element>;
     attributes: Record<string, any>;
     context: Record<string, unknown>;
+    state: ComponentState;
 }) => void;
 interface ComponentDefinitionOptions {
     getBaseClass?: () => typeof HTMLElement;

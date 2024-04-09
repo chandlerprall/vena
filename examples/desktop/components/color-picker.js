@@ -1,6 +1,6 @@
 import { registerComponent, Signal } from 'vena';
 
-registerComponent('color-picker', ({ render, refs, attributes, element }) => {
+registerComponent('color-picker', ({ render, attributes, element }) => {
   const initialvalue = attributes.initialvalue?.value || '#000000';
   const initialHsl = hexToHSL(initialvalue);
 
@@ -111,9 +111,9 @@ registerComponent('color-picker', ({ render, refs, attributes, element }) => {
     <div class="lightnessBg"></div>
     <div id="colorIndicator"
       style=${Signal.with(saturation, lightness).as(([saturation, lightness]) => ({
-        left: `${saturation}%`,
-        top: `${100 - lightness}%`,
-      }))}
+    left: `${saturation}%`,
+    top: `${100 - lightness}%`,
+  }))}
     ></div>
   </section>
   <section class="values">
@@ -125,9 +125,9 @@ registerComponent('color-picker', ({ render, refs, attributes, element }) => {
     (${hue}, ${saturation}%, ${lightness}%)
     <div
       id="colorResult"
-      style=${Signal.with(hue, saturation, lightness).as(([hue, saturation, lightness]) => 
-        ({ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` })
-      )}
+      style=${Signal.with(hue, saturation, lightness).as(([hue, saturation, lightness]) =>
+    ({ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` })
+  )}
     ></div>
   </section>
 </div>

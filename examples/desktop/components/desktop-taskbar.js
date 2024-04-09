@@ -1,8 +1,8 @@
 import { registerComponent } from 'vena';
 
 registerComponent('desktop-taskbar', ({ render }) => {
-	render`
-<style>	
+  render`
+<style>
 :host {
 	display: flex;
 	justify-content: center;

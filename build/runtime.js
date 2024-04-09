@@ -302,7 +302,8 @@ function getAttributeForExpression(prevString) {
     };
 }
 const ATTRIBUTE_MAP = Symbol("attribute map");
-const definedElements = new Set();
+const definedElements = new Map();
+const liveElements = new Map();
 const magicBagOfHolding = {};
 // @ts-ignore
 window.magicBagOfHolding = magicBagOfHolding;
@@ -311,7 +312,7 @@ const collectValue = (id) => {
     delete magicBagOfHolding[id];
     return value;
 };
-const render = (strings = [''], ...rest) => {
+const render = (strings = [""], ...rest) => {
     const hydrations = [];
     const allParts = [...strings];
     for (let i = 0; i < rest.length; i++) {
@@ -467,10 +468,10 @@ const render = (strings = [''], ...rest) => {
 };
 export const element = (...args) => {
     const { html, hydrate } = render(...args);
-    const parsingNode = document.createElement('div');
+    const parsingNode = document.createElement("div");
     parsingNode.innerHTML = html;
     const element = parsingNode.firstElementChild;
-    parsingNode.innerHTML = '';
+    parsingNode.innerHTML = "";
     hydrate(element);
     return element;
 };
@@ -489,8 +490,18 @@ const getElementContext = (element) => {
     return elementContext;
 };
 export function registerComponent(name, componentDefinition, options = {}) {
+    if (definedElements.has(name)) {
+        definedElements.set(name, componentDefinition);
+        const elements = Array.from(liveElements.get(name));
+        console.log("updating", name);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].initialize();
+        }
+        return;
+    }
     const { getBaseClass, getElementClass, elementRegistryOptions } = options;
-    definedElements.add(name);
+    definedElements.set(name, componentDefinition);
+    liveElements.set(name, new Set());
     const BaseClass = getBaseClass?.() ?? HTMLElement;
     const ComponentClass = class extends BaseClass {
         attributeValues = new Proxy({ [ATTRIBUTE_MAP]: new Signal(0) }, {
@@ -512,10 +523,9 @@ export function registerComponent(name, componentDefinition, options = {}) {
             },
         });
         refs = {};
-        // @TODO: move things here
-        //connectedCallback() {}
         constructor() {
             super();
+            liveElements.get(name).add(this);
             for (const attributeName of this.getAttributeNames()) {
                 if (attributeName.startsWith("on"))
                     continue;
@@ -545,7 +555,13 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 // a shadow root, so we need to catch the error and fallback to using the element itself
                 Object.defineProperty(this, "shadowRoot", { value: this });
             }
-            this.#initialize();
+            // this.initialize();
+        }
+        connectedCallback() {
+            this.initialize();
+        }
+        disconnectedCallback() {
+            liveElements.get(name).delete(this);
         }
         #attachAttribute(attributeName, value) {
             if (!this.attributeValues.hasOwnProperty(attributeName)) {
@@ -571,8 +587,10 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 this.attributeValues[attributeName].value = value;
             }
         }
-        #initialize() {
+        state = {};
+        initialize() {
             const element = this;
+            const componentDefinition = definedElements.get(name);
             const context = new Proxy({}, {
                 get(target, key) {
                     let currentElement = element.parentElement;
@@ -586,6 +604,30 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 },
                 set(target, key, value) {
                     getElementContext(element)[key] = value;
+                    return true;
+                },
+            });
+            const componentState = this.state;
+            const stateFn = (initialState) => {
+                for (const key in initialState) {
+                    if (componentState.hasOwnProperty(key) === false) {
+                        componentState[key] = new Signal(initialState[key]);
+                    }
+                }
+                return componentState;
+            };
+            const state = new Proxy(stateFn, {
+                get(target, key) {
+                    if (target.hasOwnProperty(key)) {
+                        return componentState[key];
+                    }
+                    const signal = new Signal();
+                    componentState[key] = signal;
+                    return signal;
+                },
+                set(target, key, value) {
+                    const state = componentState[key];
+                    state.value = value;
                     return true;
                 },
             });
@@ -608,6 +650,8 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 refs: this.refs,
                 attributes: this.attributeValues,
                 context,
+                // @ts-expect-error
+                state,
             });
         }
         emit(eventName, detail) {
@@ -623,4 +667,12 @@ export function registerComponent(name, componentDefinition, options = {}) {
     const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
     customElements.define(name, elementClass, elementRegistryOptions);
 }
+registerComponent("x-button", ({ state }) => {
+    const { input, equation, answer } = state({
+        input: "0",
+        equation: "",
+        answer: "",
+    });
+    console.log(input, equation, answer);
+});
 //# sourceMappingURL=runtime.js.map

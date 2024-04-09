@@ -334,7 +334,8 @@ function getAttributeForExpression(prevString: string): Attribute | null {
 }
 
 const ATTRIBUTE_MAP = Symbol("attribute map");
-const definedElements = new Set();
+const definedElements = new Map<string, ComponentDefinitionFn>();
+const liveElements = new Map<string, Set<HTMLElement & { initialize: () => void }>>();
 
 const magicBagOfHolding: Record<string, unknown> = {};
 // @ts-ignore
@@ -343,7 +344,7 @@ const collectValue = (id: string) => {
 	const value = magicBagOfHolding[id];
 	delete magicBagOfHolding[id];
 	return value;
-}
+};
 
 // type HydrationPart = Signal;
 interface DOMHydration {
@@ -384,7 +385,7 @@ interface ElementHydration {
 	part: HTMLElement;
 }
 type Hydration = DOMHydration | AttributeHydration | BooleanAttributeHydration | AttributeMapHydration | HandlerHydration | ElementHydration;
-const render = (strings: TemplateStringsArray = [''] as unknown as TemplateStringsArray, ...rest: any[]) => {
+const render = (strings: TemplateStringsArray = [""] as unknown as TemplateStringsArray, ...rest: any[]) => {
 	const hydrations: Hydration[] = [];
 	const allParts = [...strings];
 
@@ -535,10 +536,10 @@ const render = (strings: TemplateStringsArray = [''] as unknown as TemplateStrin
 export const element = (...args: [TemplateStringsArray, ...any[]]) => {
 	const { html, hydrate } = render(...args);
 
-	const parsingNode = document.createElement('div');
+	const parsingNode = document.createElement("div");
 	parsingNode.innerHTML = html;
 	const element = parsingNode.firstElementChild as HTMLElement;
-	parsingNode.innerHTML = '';
+	parsingNode.innerHTML = "";
 
 	hydrate(element);
 
@@ -561,7 +562,17 @@ const getElementContext = (element: Element) => {
 
 type StringWithHyphen = `${string}-${string}`;
 
-type ComponentDefinitionFn = (options: { element: HTMLElement; render: (strings: TemplateStringsArray, ...rest: any[]) => void; refs: Record<string, Element>; attributes: Record<string, any>; context: Record<string, unknown> }) => void;
+type ComponentState = <T>(initialState: T) => {
+	[key in keyof T]: Signal<T[key]>;
+};
+type ComponentDefinitionFn = (options: {
+	element: HTMLElement;
+	render: (strings: TemplateStringsArray, ...rest: any[]) => void;
+	refs: Record<string, Element>;
+	attributes: Record<string, any>;
+	context: Record<string, unknown>;
+	state: ComponentState;
+}) => void;
 
 interface ComponentDefinitionOptions {
 	getBaseClass?: () => typeof HTMLElement;
@@ -569,9 +580,20 @@ interface ComponentDefinitionOptions {
 	elementRegistryOptions?: ElementDefinitionOptions;
 }
 export function registerComponent(name: StringWithHyphen, componentDefinition: ComponentDefinitionFn, options: ComponentDefinitionOptions = {}) {
+	if (definedElements.has(name)) {
+		definedElements.set(name, componentDefinition);
+		const elements = Array.from(liveElements.get(name)!);
+		console.log("updating", name);
+		for (let i = 0; i < elements.length; i++) {
+			elements[i].initialize();
+		}
+		return;
+	}
+
 	const { getBaseClass, getElementClass, elementRegistryOptions } = options;
 
-	definedElements.add(name);
+	definedElements.set(name, componentDefinition);
+	liveElements.set(name, new Set());
 
 	const BaseClass = getBaseClass?.() ?? HTMLElement;
 	const ComponentClass = class extends BaseClass {
@@ -597,10 +619,10 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 
 		refs: Record<string, Element> = {};
 
-		// @TODO: move things here
-		//connectedCallback() {}
 		constructor() {
 			super();
+
+			liveElements.get(name)!.add(this);
 
 			for (const attributeName of this.getAttributeNames()) {
 				if (attributeName.startsWith("on")) continue;
@@ -631,7 +653,15 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 				Object.defineProperty(this, "shadowRoot", { value: this });
 			}
 
-			this.#initialize();
+			// this.initialize();
+		}
+
+		connectedCallback() {
+			this.initialize();
+		}
+
+		disconnectedCallback() {
+			liveElements.get(name)!.delete(this);
 		}
 
 		#attachAttribute(attributeName: string, value: string | null) {
@@ -659,8 +689,11 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 			}
 		}
 
-		#initialize() {
+		state: Record<string, Signal> = {};
+
+		initialize() {
 			const element = this;
+			const componentDefinition = definedElements.get(name)!;
 
 			const context = new Proxy(
 				{},
@@ -683,6 +716,32 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 				}
 			);
 
+			const componentState = this.state;
+			const stateFn = (initialState: any): typeof componentState => {
+				for (const key in initialState) {
+					if (componentState.hasOwnProperty(key) === false) {
+						componentState[key] = new Signal(initialState[key]);
+					}
+				}
+				return componentState;
+			};
+			const state = new Proxy(stateFn, {
+				get(target, key) {
+					if (target.hasOwnProperty(key)) {
+						return componentState[key as string];
+					}
+					const signal = new Signal();
+					componentState[key as string] = signal;
+					return signal;
+				},
+
+				set(target, key, value) {
+					const state = componentState[key as string];
+					state.value = value;
+					return true;
+				},
+			});
+
 			// @TODO: alert component definition on unmount
 			componentDefinition({
 				element: this,
@@ -703,6 +762,8 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 				refs: this.refs,
 				attributes: this.attributeValues,
 				context,
+				// @ts-expect-error
+				state,
 			});
 		}
 
@@ -722,3 +783,12 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 	const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
 	customElements.define(name, elementClass, elementRegistryOptions);
 }
+
+registerComponent("x-button", ({ state }) => {
+	const { input, equation, answer } = state({
+		input: "0",
+		equation: "",
+		answer: "",
+	});
+	console.log(input, equation, answer);
+});
