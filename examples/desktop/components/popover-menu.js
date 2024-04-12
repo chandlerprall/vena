@@ -86,7 +86,7 @@ menu ::slotted(button:active) {
 	<menu
     id="content"
     onClick=${onMenuClick}
-    style=${attributes.direction.as(direction => ({
+    style=${attributes.direction.map(direction => ({
       [direction === 'up' ? 'bottom' : 'top']: '100%'
     }))}
   >

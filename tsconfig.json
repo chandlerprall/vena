@@ -14,8 +14,7 @@
     "strictNullChecks": true,
     "noUnusedLocals": true
   },
-  "files": [
-    "src/runtime.ts",
-    "src/live.ts"
+  "include": [
+    "src/**/*"
   ]
 }

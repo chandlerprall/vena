@@ -1,3 +1,4 @@
+import { Signal } from "./signal.js";
 export class ConnectedNode {
     static getNode(value) {
         if (value instanceof HTMLElement) {
@@ -108,82 +109,6 @@ export class ContainedNodeArray extends Array {
     }
     pop() {
         throw new Error("unimplemented");
-    }
-}
-export class Signal {
-    static with(...signals) {
-        const holder = new Signal(signals.map((signal) => signal.value));
-        let isQueued = false;
-        const doUpdate = () => {
-            isQueued = false;
-            holder.value = signals.map((signal) => signal.value);
-        };
-        const onUpdate = () => {
-            if (isQueued)
-                return;
-            isQueued = true;
-            queueMicrotask(doUpdate);
-        };
-        signals.forEach((signal) => signal.on(onUpdate));
-        // @TODO: how to garbage collect this?
-        return holder;
-    }
-    #connectedNode = new ConnectedNode();
-    #value;
-    #isUpdating = false;
-    #listeners = [];
-    constructor(value) {
-        this.#value = value;
-        this.#connectedNode.value = value;
-    }
-    get value() {
-        return this.#value;
-    }
-    set value(newValue) {
-        if (this.#isUpdating)
-            return;
-        this.#isUpdating = true;
-        this.#value = newValue;
-        this.#connectedNode.value = newValue;
-        for (let i = 0; i < this.#listeners.length; i++) {
-            this.#listeners[i](newValue);
-        }
-        this.#isUpdating = false;
-    }
-    on(callback) {
-        this.#listeners.push(callback);
-    }
-    off(callback) {
-        this.#listeners = this.#listeners.filter((listener) => listener !== callback);
-    }
-    as(callback) {
-        const holder = new Signal(callback(this.#value));
-        // @TODO: how to garbage collect this?
-        this.on((nextValue) => {
-            const result = callback(nextValue);
-            holder.value = result;
-        });
-        return holder;
-    }
-    with(otherSignal) {
-        const holder = new Signal([this.#value, otherSignal.value]);
-        const update = () => {
-            holder.value = [this.#value, otherSignal.value];
-        };
-        // @TODO: how to garbage collect this?
-        this.on(update);
-        otherSignal.on(update);
-        return holder;
-    }
-    connect(element, options) {
-        this.disconnect();
-        this.#connectedNode.connect(element, options);
-    }
-    disconnect() {
-        this.#connectedNode.disconnect();
-    }
-    toString() {
-        return this.#value?.toString();
     }
 }
 const domParser = new window.DOMParser();
@@ -333,7 +258,14 @@ const render = (strings = [""], ...rest) => {
             if (type === "dom") {
                 const { id, part } = hydration;
                 const dataNode = owningElement.shadowRoot?.querySelector(`[id="${id}"]`) ?? owningElement.querySelector(`[id="${id}"]`) ?? owningElement;
-                part.connect(dataNode, { replace: true });
+                if (part instanceof ContainedNodeArray) {
+                    part.connect(dataNode, { replace: true });
+                }
+                else {
+                    const connectedNode = new ConnectedNode(part.value);
+                    part.on(nextValue => connectedNode.value = nextValue);
+                    connectedNode.connect(dataNode, { replace: true });
+                }
             }
             else if (type === "element") {
                 const { id, part } = hydration;
@@ -506,12 +438,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
     const ComponentClass = class extends BaseClass {
         attributeValues = new Proxy({ [ATTRIBUTE_MAP]: new Signal(0) }, {
             set: (target, key, value) => {
-                if (value instanceof Signal) {
-                    target[key] = value;
-                }
-                else {
-                    target[key].value = value;
-                }
+                this.attributeValues[key].value = value;
                 target[ATTRIBUTE_MAP].value++;
                 return true;
             },
@@ -667,12 +594,4 @@ export function registerComponent(name, componentDefinition, options = {}) {
     const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
     customElements.define(name, elementClass, elementRegistryOptions);
 }
-registerComponent("x-button", ({ state }) => {
-    const { input, equation, answer } = state({
-        input: "0",
-        equation: "",
-        answer: "",
-    });
-    console.log(input, equation, answer);
-});
 //# sourceMappingURL=runtime.js.map

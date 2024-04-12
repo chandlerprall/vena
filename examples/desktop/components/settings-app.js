@@ -91,28 +91,28 @@ registerComponent('settings-app', ({ render, refs }) => {
 </style>
 
 <div id="swatches">
-	<button onClick=${() => selectedColor.value = 'background'} style=${background.as(color => ({ color }))}>
+	<button onClick=${() => selectedColor.value = 'background'} style=${background.map(color => ({ color }))}>
 		<span class="swatch"></span>
 		<span>background</span>
 	</button>
 	
-	<button id="highlight" onClick=${() => selectedColor.value = 'highlight'} style=${highlight.as(color => ({ color }))}>
+	<button id="highlight" onClick=${() => selectedColor.value = 'highlight'} style=${highlight.map(color => ({ color }))}>
 		<span class="swatch"></span>
 		<span>highlight</span>
 	</button>
 	
-	<button id="system" onClick=${() => selectedColor.value = 'system'} style=${system.as(color => ({ color }))}>
+	<button id="system" onClick=${() => selectedColor.value = 'system'} style=${system.map(color => ({ color }))}>
 		<span class="swatch"></span>
 		<span>system</span>
 	</button>
 	
-	<button id="border" onClick=${() => selectedColor.value = 'border'} style=${border.as(color => ({ color }))}>
+	<button id="border" onClick=${() => selectedColor.value = 'border'} style=${border.map(color => ({ color }))}>
 		<span class="swatch"></span>
 		<span>border</span>
 	</button>
 </div>
 
-<div id="picker">${selectedColor.as(selectedColor => {
+<div id="picker">${selectedColor.map(selectedColor => {
     if (!selectedColor) return '';
     const currentHex = settingsMap[selectedColor];
     return element`

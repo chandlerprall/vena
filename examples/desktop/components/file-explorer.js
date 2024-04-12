@@ -6,7 +6,7 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
 
   me.addEventListener('click', () => me.emit('select-file', null));
 
-  const crumbs = liveView.path.as(path => {
+  const crumbs = liveView.path.map(path => {
     const crumbs = [];
     const parts = path.split('/');
     for (const part of parts) {
@@ -19,16 +19,13 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
     return crumbs;
   });
 
-  const directories = liveView.directories.as(directories => {
+  const directories = liveView.directories.map(directories => {
     const directoriesList = [];
     const sortedDirectories = [...directories].sort((a, b) => a.name.localeCompare(b.name));
     for (const directory of sortedDirectories) {
       directoriesList.push(element`
 				<button
 				  class="item directory"
-				  onClick=${(e) => {
-            // e.stopImmediatePropagation();
-          }}
           onDblclick=${() => {
             const result = me.emit('dblclick-directory', directory);
             if (result) {
@@ -44,7 +41,7 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
     return directoriesList;
   });
 
-  const files = Signal.with(attributes.filter, liveView.files).as(([filterAttribute, files]) => {
+  const files = Signal.from(attributes.filter, liveView.files).map(([filterAttribute, files]) => {
     const filters = filterAttribute ?? [];
 
     const filesList = [];

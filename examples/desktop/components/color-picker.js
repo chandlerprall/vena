@@ -20,7 +20,7 @@ registerComponent('color-picker', ({ render, attributes, element }) => {
     lightness.value = nextLightness;
   };
 
-  Signal.with(hue, saturation, lightness).on(([h, s, l]) => {
+  Signal.from(hue, saturation, lightness).on(([h, s, l]) => {
     element.emit('color', HSLToHex(h, s, l));
   });
 
@@ -104,13 +104,13 @@ registerComponent('color-picker', ({ render, attributes, element }) => {
 <div class="colorpicker">
   <section
     class="colorBox"
-    style=${hue.as(hue => ({ backgroundColor: `hsl(${hue}, 100%, 50%)` }))}
+    style=${hue.map(hue => ({ backgroundColor: `hsl(${hue}, 100%, 50%)` }))}
     onClick=${getValuesFromClickEvent}
   >
     <div class="saturationBg"></div>
     <div class="lightnessBg"></div>
     <div id="colorIndicator"
-      style=${Signal.with(saturation, lightness).as(([saturation, lightness]) => ({
+      style=${Signal.from(saturation, lightness).map(([saturation, lightness]) => ({
     left: `${saturation}%`,
     top: `${100 - lightness}%`,
   }))}
@@ -125,7 +125,7 @@ registerComponent('color-picker', ({ render, attributes, element }) => {
     (${hue}, ${saturation}%, ${lightness}%)
     <div
       id="colorResult"
-      style=${Signal.with(hue, saturation, lightness).as(([hue, saturation, lightness]) =>
+      style=${Signal.from(hue, saturation, lightness).map(([hue, saturation, lightness]) =>
     ({ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` })
   )}
     ></div>

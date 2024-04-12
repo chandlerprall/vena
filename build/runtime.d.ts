@@ -1,3 +1,4 @@
+import { Signal } from "./signal.js";
 export declare class ConnectedNode<ValueType = unknown> {
     #private;
     static getNode(value: any): HTMLElement | Text;
@@ -19,23 +20,6 @@ export declare class ContainedNodeArray extends Array {
     splice(start: number, deleteCount: number, ...items: Node[]): any[];
     unshift(): number;
     pop(): void;
-}
-type FromSignals<T> = T extends [Signal<infer Head>, ...infer Tail] ? [Head, ...FromSignals<Tail>] : T extends [Signal<infer Last>] ? [Last] : [];
-export declare class Signal<ValueType = unknown> {
-    #private;
-    static with<T extends Signal[]>(...signals: T): Signal<FromSignals<T>>;
-    constructor(value?: ValueType);
-    get value(): ValueType;
-    set value(newValue: ValueType);
-    on(callback: (value: ValueType) => void): void;
-    off(callback: (value: ValueType) => void): void;
-    as<NewValueType>(callback: (value: ValueType) => NewValueType): Signal<NewValueType>;
-    with<OtherSignalType>(otherSignal: Signal<OtherSignalType>): Signal<[ValueType, OtherSignalType]>;
-    connect(element: Element, options?: {
-        replace?: boolean;
-    }): void;
-    disconnect(): void;
-    toString(): string | undefined;
 }
 export declare const html: (args_0: TemplateStringsArray, ...args_1: any[]) => ContainedNodeArray;
 export declare const element: (args_0: TemplateStringsArray, ...args_1: any[]) => HTMLElement;

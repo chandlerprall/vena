@@ -108,7 +108,7 @@ export const openFileDialog = ({ filter }) => {
 				
 				<button slot="buttons" onclick=${() => closeDialog(null)}>Close</button>
 				<button slot="buttons"
-					disabled=${selectedFile.as(file => !file)}
+					disabled=${selectedFile.map(file => !file)}
 					onclick=${() => closeDialog(selectedFile.value)}
 				>Open</button>
 			</modal-dialog>
@@ -160,7 +160,7 @@ export const openSaveDialog = () => {
 				/>
 				
 				<button slot="buttons" onclick=${() => closeDialog(null)}>Cancel</button>
-				<button slot="buttons" disabled=${filename.as(filename => !filename)} onclick=${() => {
+				<button slot="buttons" disabled=${filename.map(filename => !filename)} onclick=${() => {
         closeDialog(`${dialog.querySelector('file-explorer').liveView.path}/${filename.value}`);
       }}>Save</button>
 			</modal-dialog>
