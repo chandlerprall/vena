@@ -162,7 +162,7 @@ function processPart(part: unknown, attribute: Attribute | null, hydrations: Hyd
 			hydrations.push({ type: "dom", part, id });
 			return `<data id="${id}"></data>`;
 		}
-	} else if (part && typeof part === "object" && ATTRIBUTE_MAP in part) {
+	} else if (part && typeof part === "object" && ALL_ATTRIBUTES in part) {
 		const id = uniqueId();
 		hydrations.push({ type: "attributemap", part: part as AttributeMapPart, id });
 		return `data-attribute-map=${id}`;
@@ -242,7 +242,7 @@ function getAttributeForExpression(prevString: string): Attribute | null {
 	};
 }
 
-const ATTRIBUTE_MAP = Symbol("attribute map");
+export const ALL_ATTRIBUTES = Symbol("all attributes");
 const definedElements = new Map<string, ComponentDefinitionFn>();
 const liveElements = new Map<string, Set<HTMLElement & { initialize: () => void }>>();
 
@@ -274,8 +274,8 @@ interface BooleanAttributeHydration {
 	attribute: Attribute;
 }
 type AttributeMapPart = {
-	[ATTRIBUTE_MAP]: Signal<number>;
-	[key: string]: Signal<unknown>;
+	[ALL_ATTRIBUTES]: Signal<Record<string, unknown>>;
+	[key: string]: any; // separate types for get & set which TS doesn't support on index signatures
 };
 interface AttributeMapHydration {
 	type: "attributemap";
@@ -404,7 +404,7 @@ const render = (strings: TemplateStringsArray = [""] as unknown as TemplateStrin
 			} else if (type === "attributemap") {
 				// @TODO: garbage collection
 				const {
-					part: { [ATTRIBUTE_MAP]: publisher, ...part },
+					part: { [ALL_ATTRIBUTES]: publisher, ...part },
 					id,
 				} = hydration;
 				const updateAttributes = () => {
@@ -512,10 +512,19 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 
 	const BaseClass = getBaseClass?.() ?? HTMLElement;
 	const ComponentClass = class extends BaseClass {
-		attributeValues = new Proxy({ [ATTRIBUTE_MAP]: new Signal(0) } as AttributeMapPart, {
+		attributeValuesIsScheduled: boolean = false;
+		attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined as any)} as AttributeMapPart, {
 			set: (target, key: string, value) => {
 				this.attributeValues[key].value = value;
-				target[ATTRIBUTE_MAP].value++;
+
+                if (!this.attributeValuesIsScheduled && this.#isConstructed) {
+                    this.attributeValuesIsScheduled = true;
+
+                    queueMicrotask(() => {
+                        this.attributeValuesIsScheduled = false;
+                        this.#updateAttributeValues();
+                    });
+                }
 
 				return true;
 			},
@@ -527,8 +536,19 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 			},
 		});
 
+		#updateAttributeValues() {
+			const values: Record<string, unknown> = {};
+			const keys = Object.keys(this.attributeValues);
+			for (let i = 0; i < keys.length; i++) {
+				const key = keys[i];
+				values[key] = this.attributeValues[key].value;
+			}
+			this.attributeValues[ALL_ATTRIBUTES].value = values;
+		}
+
 		refs: Record<string, Element> = {};
 
+		#isConstructed = false;
 		constructor() {
 			super();
 
@@ -539,6 +559,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 				const attributeValue = this.getAttribute(attributeName);
 				this.#attachAttribute(attributeName, attributeValue);
 			}
+			this.#updateAttributeValues();
 
 			const mutationObserver = new MutationObserver((mutations) => {
 				for (let i = 0; i < mutations.length; i++) {
@@ -563,7 +584,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 				Object.defineProperty(this, "shadowRoot", { value: this });
 			}
 
-			// this.initialize();
+			this.#isConstructed = true;
 		}
 
 		connectedCallback() {
@@ -587,7 +608,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 					data.on((nextValue) => {
 						this.attributeValues[attributeName] = nextValue;
 					});
-					this.attributeValues[attributeName].on((nextValue) => {
+					this.attributeValues[attributeName].on((nextValue: unknown) => {
 						data.value = nextValue;
 					});
 					this.attributeValues[attributeName].value = data.value;
@@ -595,7 +616,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 					this.attributeValues[attributeName].value = data;
 				}
 			} else {
-				this.attributeValues[attributeName].value = value;
+				this.attributeValues[attributeName] = value;
 			}
 		}
 

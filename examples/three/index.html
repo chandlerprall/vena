@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html, body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="importmap">{
+    "imports": {
+      "three": "https://esm.run/three@0.163.0",
+      "vena": "../../build/index.js",
+      "vena/live": "../../build/live.js"
+    }
+  }</script>
+  <script type="module" src="app.js"></script>
+  <script type="module">
+    import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
+    import { Signal, element } from 'vena';
+    import 'vena/live';
+
+    const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10);
+    camera.lookAt(new Vector3(0, 2, 0));
+
+    const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 180)
+    const quaternion = new Signal(new Quaternion());
+
+    setInterval(() => {
+      quaternion.value.multiply(rotation);
+      quaternion.value = quaternion.value;
+    }, 1000 / 60);
+
+    document.body.append(element`
+      <three-stage camera=${camera}>
+        <three-light-ambient intensity="0.2"></three-light-ambient>
+        <three-light-point intensity="30" decay="1" position=${new Vector3(0, 10, 3)}></three-light-point>
+        <three-mesh>
+          <three-geometry-box width="30" depth="30" height="0.1"></three-geometry-box>
+          <three-material-lambert color="#66dd22"></three-material-lambert>
+        </three-mesh>
+        <three-gltf src="assets/Cow.gltf" position=${new Vector3(-5, 0, 0)} quaternion=${quaternion}></three-gltf>
+        <three-gltf src="assets/Pig.gltf" position=${new Vector3(5, 0, 0)} quaternion=${quaternion}></three-gltf>
+      </three-stage>
+    `);
+  </script>
+</body>
+
+</html>

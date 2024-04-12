@@ -141,7 +141,7 @@ function processPart(part, attribute, hydrations) {
             return `<data id="${id}"></data>`;
         }
     }
-    else if (part && typeof part === "object" && ATTRIBUTE_MAP in part) {
+    else if (part && typeof part === "object" && ALL_ATTRIBUTES in part) {
         const id = uniqueId();
         hydrations.push({ type: "attributemap", part: part, id });
         return `data-attribute-map=${id}`;
@@ -226,7 +226,7 @@ function getAttributeForExpression(prevString) {
         asValue: (value) => (isQuoted ? value : `"${value}"`),
     };
 }
-const ATTRIBUTE_MAP = Symbol("attribute map");
+export const ALL_ATTRIBUTES = Symbol("all attributes");
 const definedElements = new Map();
 const liveElements = new Map();
 const magicBagOfHolding = {};
@@ -356,7 +356,7 @@ const render = (strings = [""], ...rest) => {
             }
             else if (type === "attributemap") {
                 // @TODO: garbage collection
-                const { part: { [ATTRIBUTE_MAP]: publisher, ...part }, id, } = hydration;
+                const { part: { [ALL_ATTRIBUTES]: publisher, ...part }, id, } = hydration;
                 const updateAttributes = () => {
                     for (const attributeName in part) {
                         const targetElement = owningElement.shadowRoot?.querySelector(`[data-attribute-map="${id}"]`) ?? owningElement.querySelector(`[data-attribute-map="${id}"]`) ?? owningElement;
@@ -436,10 +436,17 @@ export function registerComponent(name, componentDefinition, options = {}) {
     liveElements.set(name, new Set());
     const BaseClass = getBaseClass?.() ?? HTMLElement;
     const ComponentClass = class extends BaseClass {
-        attributeValues = new Proxy({ [ATTRIBUTE_MAP]: new Signal(0) }, {
+        attributeValuesIsScheduled = false;
+        attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined) }, {
             set: (target, key, value) => {
                 this.attributeValues[key].value = value;
-                target[ATTRIBUTE_MAP].value++;
+                if (!this.attributeValuesIsScheduled && this.#isConstructed) {
+                    this.attributeValuesIsScheduled = true;
+                    queueMicrotask(() => {
+                        this.attributeValuesIsScheduled = false;
+                        this.#updateAttributeValues();
+                    });
+                }
                 return true;
             },
             get: (target, key) => {
@@ -449,7 +456,17 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 return target[key];
             },
         });
+        #updateAttributeValues() {
+            const values = {};
+            const keys = Object.keys(this.attributeValues);
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
+                values[key] = this.attributeValues[key].value;
+            }
+            this.attributeValues[ALL_ATTRIBUTES].value = values;
+        }
         refs = {};
+        #isConstructed = false;
         constructor() {
             super();
             liveElements.get(name).add(this);
@@ -459,6 +476,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 const attributeValue = this.getAttribute(attributeName);
                 this.#attachAttribute(attributeName, attributeValue);
             }
+            this.#updateAttributeValues();
             const mutationObserver = new MutationObserver((mutations) => {
                 for (let i = 0; i < mutations.length; i++) {
                     const mutation = mutations[i];
@@ -482,7 +500,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 // a shadow root, so we need to catch the error and fallback to using the element itself
                 Object.defineProperty(this, "shadowRoot", { value: this });
             }
-            // this.initialize();
+            this.#isConstructed = true;
         }
         connectedCallback() {
             this.initialize();
@@ -511,7 +529,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 }
             }
             else {
-                this.attributeValues[attributeName].value = value;
+                this.attributeValues[attributeName] = value;
             }
         }
         state = {};

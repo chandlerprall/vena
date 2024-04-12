@@ -15,7 +15,7 @@ export declare class Signal<T = any> {
     set dirty(isDirty: boolean);
     get value(): T;
     set value(valueOrSignal: T);
-    on(listener: Signal | ((value: T) => void)): void;
+    on(listener: Signal | ((value: T) => void), immediate?: boolean): void;
     off(listener: Signal | ((value: T) => void)): void;
     map(transform: (value: unknown) => T): Signal<T>;
     toString(): string | undefined;

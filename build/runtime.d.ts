@@ -22,6 +22,7 @@ export declare class ContainedNodeArray extends Array {
     pop(): void;
 }
 export declare const html: (args_0: TemplateStringsArray, ...args_1: any[]) => ContainedNodeArray;
+export declare const ALL_ATTRIBUTES: unique symbol;
 export declare const element: (args_0: TemplateStringsArray, ...args_1: any[]) => HTMLElement;
 type StringWithHyphen = `${string}-${string}`;
 type ComponentState = <T>(initialState: T) => {

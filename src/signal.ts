@@ -107,8 +107,11 @@ export class Signal<T = any> {
     this.#propagate();
   }
 
-  on(listener: Signal | ((value: T) => void)){
+  on(listener: Signal | ((value: T) => void), immediate = false) {
     this.#listeners.push(listener);
+    if (immediate && !(listener instanceof Signal)) {
+      listener(this.value);
+    }
   }
 
   off(listener: Signal | ((value: T) => void)) {

@@ -9,7 +9,10 @@ socket.onmessage = function (event) {
 			const script = document.createElement("script");
 			script.type = "module";
 			script.src = scriptUrl;
-			document.head.appendChild(script);
+			script.onload = () => {
+				script.remove();
+			}
+			document.head.append(script);
 		}
 	}
 };

@@ -94,8 +94,11 @@ export class Signal {
         }
         this.#propagate();
     }
-    on(listener) {
+    on(listener, immediate = false) {
         this.#listeners.push(listener);
+        if (immediate && !(listener instanceof Signal)) {
+            listener(this.value);
+        }
     }
     off(listener) {
         this.#listeners = this.#listeners.filter(l => l !== listener);
