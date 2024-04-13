@@ -469,7 +469,6 @@ export function registerComponent(name, componentDefinition, options = {}) {
         #isConstructed = false;
         constructor() {
             super();
-            liveElements.get(name).add(this);
             for (const attributeName of this.getAttributeNames()) {
                 if (attributeName.startsWith("on"))
                     continue;
@@ -503,6 +502,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
             this.#isConstructed = true;
         }
         connectedCallback() {
+            liveElements.get(name).add(this);
             this.initialize();
         }
         disconnectedCallback() {

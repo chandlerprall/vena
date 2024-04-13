@@ -9,11 +9,10 @@
 loading...
 
 <script type="module">
-	import { element, Signal, registerComponent } from '../build/runtime.js';
+	import { element, Signal, registerComponent } from '../build/index.js';
 
 	registerComponent('gc-debugger', ({ render, attributes }) => {
 		render`<slot></slot>`;
-		// attributes.value.as(value => value());
 	});
 
 

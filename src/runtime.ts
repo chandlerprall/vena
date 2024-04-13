@@ -552,7 +552,6 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 		constructor() {
 			super();
 
-			liveElements.get(name)!.add(this);
 
 			for (const attributeName of this.getAttributeNames()) {
 				if (attributeName.startsWith("on")) continue;
@@ -588,6 +587,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 		}
 
 		connectedCallback() {
+			liveElements.get(name)!.add(this);
 			this.initialize();
 		}
 
