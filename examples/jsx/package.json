@@ -1,0 +1,10 @@
+{
+  "name": "jsx",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "tsc --watch"
+  }
+}

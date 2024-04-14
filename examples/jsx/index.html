@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html, body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <jsx-app></jsx-app>
+
+  <script type="importmap">{
+    "imports": {
+      "vena": "../../build/index.js",
+      "vena/live": "../../build/live.js",
+      "vena/jsx-runtime": "../../build/jsx-runtime.js"
+    }
+  }</script>
+  <script type="module" src="build/jsx-app.js"></script>
+</body>
+
+</html>
