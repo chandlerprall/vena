@@ -36,5 +36,14 @@ export function jsx(tagName, { children, ...attributes }) {
         }
     }).join('')}${endTag}`, hydrations);
 }
-export const jsxs = jsx;
+export function jsxs(tagName, attributes) {
+    return jsx(tagName, attributes);
+}
+//
+// export declare namespace jsx {
+//     export import jsx = JSXInternal.IntrinsicElements;
+// }
+// export declare namespace jsxs {
+//     export import jsxs = JSXInternal.IntrinsicElements;
+// }
 //# sourceMappingURL=jsx-runtime.js.map

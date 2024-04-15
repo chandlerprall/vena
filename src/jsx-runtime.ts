@@ -2,7 +2,7 @@ import { Attribute, Hydration, ComponentDefinition, processPart} from './runtime
 
 export const Fragment = Symbol('Fragment');
 
-export function jsx(tagName: string | typeof Fragment, { children, ...attributes }: Record<string, any>): ComponentDefinition {
+export function jsx(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragment, { children, ...attributes }: Record<string, any>): ComponentDefinition {
     const childs: any[] = children = Array.isArray(children) ? children : [children];
 
     const hydrations: Hydration[] = [];
@@ -46,4 +46,26 @@ export function jsx(tagName: string | typeof Fragment, { children, ...attributes
     );
 }
 
-export const jsxs = jsx;
+export function jsxs(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragment, attributes: Record<string, any>): ComponentDefinition {
+    return jsx(tagName, attributes);
+}
+
+declare namespace JSXInternal {
+    type HTMLAttributes<T> = Partial<Omit<T, 'children'>> & Partial<GlobalEventHandlers>;
+
+    export type IntrinsicElements = {
+        [Element in keyof HTMLElementTagNameMap]: HTMLAttributes<HTMLElementTagNameMap[Element]>
+    }
+}
+
+export declare namespace JSX {
+    export import IntrinsicElements = JSXInternal.IntrinsicElements;
+    export type Element = ComponentDefinition;
+}
+//
+// export declare namespace jsx {
+//     export import jsx = JSXInternal.IntrinsicElements;
+// }
+// export declare namespace jsxs {
+//     export import jsxs = JSXInternal.IntrinsicElements;
+// }

@@ -18,14 +18,9 @@
     "jsxImportSource": "vena",
     "paths": {
         "vena": ["../../build/index"],
-        "vena/jsx-runtime": ["../../build/jsx-runtime"],
-        "vena/jsx.d.ts": ["../../build/jsx.d.ts"]
+        "vena/jsx-runtime": ["../../build/jsx-runtime"]
     }
   },
-//  "files": [
-//    "src/jsx-app.tsx",
-//
-//  ],
   "include": [
     "src/**/*"
   ]
