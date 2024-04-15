@@ -503,6 +503,9 @@ interface ComponentDefinitionOptions {
 	getElementClass?: (ComponentClass: typeof HTMLElement) => typeof HTMLElement;
 	elementRegistryOptions?: ElementDefinitionOptions;
 }
+
+export const ElementName = Symbol("ElementName");
+export const ElementIs = Symbol("ElementIs");
 export function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options: ComponentDefinitionOptions = {}): T {
 	if (definedElements.has(name)) {
 		definedElements.set(name, componentDefinition);
@@ -521,6 +524,9 @@ export function registerComponent<T extends StringWithHyphen>(name: T, component
 
 	const BaseClass = getBaseClass?.() ?? HTMLElement;
 	const ComponentClass = class extends BaseClass {
+		static [ElementName]: string = elementRegistryOptions?.extends == null ? name : elementRegistryOptions.extends;
+		static [ElementIs]?: string = elementRegistryOptions?.extends == null ? undefined : name;
+
 		attributeValuesIsScheduled: boolean = false;
 		attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined as any) } as AttributeMapPart, {
 			set: (target, key: string, value) => {
@@ -727,6 +733,7 @@ export function registerComponent<T extends StringWithHyphen>(name: T, component
 	Object.defineProperty(ComponentClass, "name", { value: name });
 
 	const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
+
 	customElements.define(name, elementClass, elementRegistryOptions);
 
 	return name;

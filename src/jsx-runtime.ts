@@ -1,4 +1,4 @@
-import { Attribute, Hydration, ComponentDefinition, processPart } from "./runtime.js";
+import { Attribute, Hydration, ComponentDefinition, processPart, ElementName, ElementIs } from "./runtime.js";
 import { Signal } from "./signal";
 
 export const Fragment = Symbol("Fragment");
@@ -36,6 +36,15 @@ export function jsx(tagName: keyof JSX.IntrinsicElements | typeof Fragment, { ch
 		startTag = "";
 		endTag = "";
 	} else {
+		const tagElement = customElements.get(tagName);
+		if (tagElement && tagElement.hasOwnProperty(ElementName)) {
+			tagName = (tagElement as CustomElementConstructor & { [ElementName]: keyof JSX.IntrinsicElements })[ElementName];
+			if (tagElement.hasOwnProperty(ElementIs)) {
+				const elementIs = (tagElement as CustomElementConstructor & { [ElementIs]: string })[ElementIs];
+				tagName = `${tagName} is="${elementIs}"` as keyof JSX.IntrinsicElements; // 🤫
+			}
+		}
+
 		startTag = `<${tagName} ${parts.join(" ")}>`;
 		endTag = `</${tagName}>`;
 	}

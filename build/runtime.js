@@ -432,6 +432,8 @@ const getElementContext = (element) => {
     }
     return elementContext;
 };
+export const ElementName = Symbol("ElementName");
+export const ElementIs = Symbol("ElementIs");
 export function registerComponent(name, componentDefinition, options = {}) {
     if (definedElements.has(name)) {
         definedElements.set(name, componentDefinition);
@@ -447,6 +449,8 @@ export function registerComponent(name, componentDefinition, options = {}) {
     liveElements.set(name, new Set());
     const BaseClass = getBaseClass?.() ?? HTMLElement;
     const ComponentClass = class extends BaseClass {
+        static [ElementName] = elementRegistryOptions?.extends == null ? name : elementRegistryOptions.extends;
+        static [ElementIs] = elementRegistryOptions?.extends == null ? undefined : name;
         attributeValuesIsScheduled = false;
         attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined) }, {
             set: (target, key, value) => {

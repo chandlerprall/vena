@@ -1,4 +1,4 @@
-import { ComponentDefinition, processPart } from "./runtime.js";
+import { ComponentDefinition, processPart, ElementName, ElementIs } from "./runtime.js";
 export const Fragment = Symbol("Fragment");
 export function jsx(tagName, { children, ...attributes }) {
     const childs = (children = Array.isArray(children) ? children : [children]);
@@ -29,6 +29,14 @@ export function jsx(tagName, { children, ...attributes }) {
         endTag = "";
     }
     else {
+        const tagElement = customElements.get(tagName);
+        if (tagElement && tagElement.hasOwnProperty(ElementName)) {
+            tagName = tagElement[ElementName];
+            if (tagElement.hasOwnProperty(ElementIs)) {
+                const elementIs = tagElement[ElementIs];
+                tagName = `${tagName} is="${elementIs}"`; // 🤫
+            }
+        }
         startTag = `<${tagName} ${parts.join(" ")}>`;
         endTag = `</${tagName}>`;
     }

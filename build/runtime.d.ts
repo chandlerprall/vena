@@ -73,7 +73,7 @@ interface ElementHydration {
 }
 export type Hydration = DOMHydration | AttributeHydration | BooleanAttributeHydration | AttributeMapHydration | HandlerHydration | ElementHydration;
 export declare function hydrate(owningElement: HTMLElement, hydrations: Hydration[]): void;
-export declare const element: (args_0: TemplateStringsArray | ComponentDefinition, ...args_1: any[]) => HTMLElement;
+export declare const element: (args_0: ComponentDefinition | TemplateStringsArray, ...args_1: any[]) => HTMLElement;
 type StringWithHyphen = `${string}-${string}`;
 type ComponentState = <T>(initialState: T) => {
     [key in keyof T]: Signal<T[key]>;
@@ -91,5 +91,7 @@ interface ComponentDefinitionOptions {
     getElementClass?: (ComponentClass: typeof HTMLElement) => typeof HTMLElement;
     elementRegistryOptions?: ElementDefinitionOptions;
 }
+export declare const ElementName: unique symbol;
+export declare const ElementIs: unique symbol;
 export declare function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options?: ComponentDefinitionOptions): T;
 export {};
