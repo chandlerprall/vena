@@ -1,7 +1,7 @@
-import { ComponentDefinition, processPart } from './runtime.js';
-export const Fragment = Symbol('Fragment');
+import { ComponentDefinition, processPart } from "./runtime.js";
+export const Fragment = Symbol("Fragment");
 export function jsx(tagName, { children, ...attributes }) {
-    const childs = children = Array.isArray(children) ? children : [children];
+    const childs = (children = Array.isArray(children) ? children : [children]);
     const hydrations = [];
     const attributeKeys = Object.keys(attributes);
     const parts = [];
@@ -16,17 +16,18 @@ export function jsx(tagName, { children, ...attributes }) {
         const part = processPart(value, attribute, hydrations);
         parts.push(`${name}=${part}`);
     }
-    let startTag = '';
-    let endTag = '';
+    let startTag = "";
+    let endTag = "";
     if (tagName === Fragment) {
-        startTag = '';
-        endTag = '';
+        startTag = "";
+        endTag = "";
     }
     else {
-        startTag = `<${tagName} ${parts.join(' ')}>`;
+        startTag = `<${tagName} ${parts.join(" ")}>`;
         endTag = `</${tagName}>`;
     }
-    return new ComponentDefinition(`${startTag}${childs.map(child => {
+    return new ComponentDefinition(`${startTag}${childs
+        .map((child) => {
         if (child instanceof ComponentDefinition) {
             hydrations.push(...child.hydrations);
             return child.html;
@@ -34,16 +35,10 @@ export function jsx(tagName, { children, ...attributes }) {
         else {
             return processPart(child, null, hydrations);
         }
-    }).join('')}${endTag}`, hydrations);
+    })
+        .join("")}${endTag}`, hydrations);
 }
 export function jsxs(tagName, attributes) {
     return jsx(tagName, attributes);
 }
-//
-// export declare namespace jsx {
-//     export import jsx = JSXInternal.IntrinsicElements;
-// }
-// export declare namespace jsxs {
-//     export import jsxs = JSXInternal.IntrinsicElements;
-// }
 //# sourceMappingURL=jsx-runtime.js.map
