@@ -6,7 +6,13 @@ export function jsx(tagName, { children, ...attributes }) {
     const attributeKeys = Object.keys(attributes);
     const parts = [];
     for (let i = 0; i < attributeKeys.length; i++) {
-        const name = attributeKeys[i];
+        let name = attributeKeys[i];
+        if (name === "className") {
+            name = "class";
+        }
+        else if (name === "htmlFor") {
+            name = "for";
+        }
         const value = attributes[name];
         const attribute = {
             name,
@@ -27,6 +33,7 @@ export function jsx(tagName, { children, ...attributes }) {
         endTag = `</${tagName}>`;
     }
     return new ComponentDefinition(`${startTag}${childs
+        .filter((child) => !!child)
         .map((child) => {
         if (child instanceof ComponentDefinition) {
             hydrations.push(...child.hydrations);

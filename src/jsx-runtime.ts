@@ -3,7 +3,7 @@ import { Signal } from "./signal";
 
 export const Fragment = Symbol("Fragment");
 
-export function jsx(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragment, { children, ...attributes }: Record<string, any>): ComponentDefinition {
+export function jsx(tagName: keyof JSX.IntrinsicElements | typeof Fragment, { children, ...attributes }: Record<string, any>): ComponentDefinition {
 	const childs: any[] = (children = Array.isArray(children) ? children : [children]);
 
 	const hydrations: Hydration[] = [];
@@ -11,7 +11,13 @@ export function jsx(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragme
 	const attributeKeys = Object.keys(attributes);
 	const parts: string[] = [];
 	for (let i = 0; i < attributeKeys.length; i++) {
-		const name = attributeKeys[i];
+		let name = attributeKeys[i];
+		if (name === "className") {
+			name = "class";
+		} else if (name === "htmlFor") {
+			name = "for";
+		}
+
 		const value = attributes[name];
 
 		const attribute: Attribute = {
@@ -36,6 +42,7 @@ export function jsx(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragme
 
 	return new ComponentDefinition(
 		`${startTag}${childs
+			.filter((child) => !!child)
 			.map((child) => {
 				if (child instanceof ComponentDefinition) {
 					hydrations.push(...child.hydrations);
@@ -49,22 +56,22 @@ export function jsx(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragme
 	);
 }
 
-export function jsxs(tagName: keyof JSXInternal.IntrinsicElements | typeof Fragment, attributes: Record<string, any>): ComponentDefinition {
+export function jsxs(tagName: keyof JSX.IntrinsicElements | typeof Fragment, attributes: Record<string, any>): ComponentDefinition {
 	return jsx(tagName, attributes);
 }
 
-declare namespace JSXInternal {
-	type Signallable<T> = {
-		[key in keyof T]: T[key] | Signal<T[key]>;
-	};
-	type HTMLAttributes<T> = Signallable<Partial<Omit<T, "children">> & Partial<GlobalEventHandlers>>;
+declare global {
+	namespace JSX {
+		type Signallable<T> = {
+			[key in keyof T]: T[key] | Signal<T[key]>;
+		};
+		type HTMLAttributes<T> = Signallable<Partial<Omit<T, "children">> & Partial<GlobalEventHandlers>>;
 
-	export type IntrinsicElements = {
-		[Element in keyof HTMLElementTagNameMap]: HTMLAttributes<HTMLElementTagNameMap[Element]>;
-	};
-}
+		export type MappedIntrinsicElements = {
+			[Element in keyof HTMLElementTagNameMap]: HTMLAttributes<HTMLElementTagNameMap[Element]>;
+		};
+		export interface IntrinsicElements extends MappedIntrinsicElements {}
 
-export declare namespace JSX {
-	export import IntrinsicElements = JSXInternal.IntrinsicElements;
-	export type Element = ComponentDefinition;
+		export type Element = ComponentDefinition;
+	}
 }

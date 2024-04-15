@@ -91,5 +91,5 @@ interface ComponentDefinitionOptions {
     getElementClass?: (ComponentClass: typeof HTMLElement) => typeof HTMLElement;
     elementRegistryOptions?: ElementDefinitionOptions;
 }
-export declare function registerComponent(name: StringWithHyphen, componentDefinition: ComponentDefinitionFn, options?: ComponentDefinitionOptions): void;
+export declare function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options?: ComponentDefinitionOptions): T;
 export {};

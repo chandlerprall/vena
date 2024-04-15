@@ -265,7 +265,7 @@ export function hydrate(owningElement, hydrations) {
             }
             else {
                 const connectedNode = new ConnectedNode(part.value);
-                part.on(nextValue => connectedNode.value = nextValue);
+                part.on((nextValue) => (connectedNode.value = nextValue));
                 connectedNode.connect(dataNode, { replace: true });
             }
         }
@@ -440,7 +440,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
         for (let i = 0; i < elements.length; i++) {
             elements[i].initialize();
         }
-        return;
+        return name;
     }
     const { getBaseClass, getElementClass, elementRegistryOptions } = options;
     definedElements.set(name, componentDefinition);
@@ -630,5 +630,6 @@ export function registerComponent(name, componentDefinition, options = {}) {
     Object.defineProperty(ComponentClass, "name", { value: name });
     const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
     customElements.define(name, elementClass, elementRegistryOptions);
+    return name;
 }
 //# sourceMappingURL=runtime.js.map

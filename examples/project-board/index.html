@@ -9,12 +9,16 @@
       padding: 0;
       height: 100%;
       width: 100%;
+
+      --token-color-foreground: #000;
+      --token-color-background: #fff;
+      --token-color-gutter: #d9d9d9;
     }
   </style>
 </head>
 
 <body>
-  <jsx-app></jsx-app>
+  <project-board></project-board>
 
   <script type="importmap">{
     "imports": {
@@ -23,7 +27,7 @@
       "vena/jsx-runtime": "../../build/jsx-runtime.js"
     }
   }</script>
-  <script type="module" src="build/jsx-app.js"></script>
+  <script type="module" src="build/project-board.js"></script>
 </body>
 
 </html>

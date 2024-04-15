@@ -323,7 +323,7 @@ export function hydrate(owningElement: HTMLElement, hydrations: Hydration[]) {
 				part.connect(dataNode, { replace: true });
 			} else {
 				const connectedNode = new ConnectedNode(part.value);
-				part.on(nextValue => connectedNode.value = nextValue);
+				part.on((nextValue) => (connectedNode.value = nextValue));
 				connectedNode.connect(dataNode, { replace: true });
 			}
 		} else if (type === "element") {
@@ -503,7 +503,7 @@ interface ComponentDefinitionOptions {
 	getElementClass?: (ComponentClass: typeof HTMLElement) => typeof HTMLElement;
 	elementRegistryOptions?: ElementDefinitionOptions;
 }
-export function registerComponent(name: StringWithHyphen, componentDefinition: ComponentDefinitionFn, options: ComponentDefinitionOptions = {}) {
+export function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options: ComponentDefinitionOptions = {}): T {
 	if (definedElements.has(name)) {
 		definedElements.set(name, componentDefinition);
 		const elements = Array.from(liveElements.get(name)!);
@@ -511,7 +511,7 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 		for (let i = 0; i < elements.length; i++) {
 			elements[i].initialize();
 		}
-		return;
+		return name;
 	}
 
 	const { getBaseClass, getElementClass, elementRegistryOptions } = options;
@@ -522,18 +522,18 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 	const BaseClass = getBaseClass?.() ?? HTMLElement;
 	const ComponentClass = class extends BaseClass {
 		attributeValuesIsScheduled: boolean = false;
-		attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined as any)} as AttributeMapPart, {
+		attributeValues = new Proxy({ [ALL_ATTRIBUTES]: new Signal(undefined as any) } as AttributeMapPart, {
 			set: (target, key: string, value) => {
 				this.attributeValues[key].value = value;
 
-                if (!this.attributeValuesIsScheduled && this.#isConstructed) {
-                    this.attributeValuesIsScheduled = true;
+				if (!this.attributeValuesIsScheduled && this.#isConstructed) {
+					this.attributeValuesIsScheduled = true;
 
-                    queueMicrotask(() => {
-                        this.attributeValuesIsScheduled = false;
-                        this.#updateAttributeValues();
-                    });
-                }
+					queueMicrotask(() => {
+						this.attributeValuesIsScheduled = false;
+						this.#updateAttributeValues();
+					});
+				}
 
 				return true;
 			},
@@ -560,7 +560,6 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 		#isConstructed = false;
 		constructor() {
 			super();
-
 
 			for (const attributeName of this.getAttributeNames()) {
 				if (attributeName.startsWith("on")) continue;
@@ -729,4 +728,6 @@ export function registerComponent(name: StringWithHyphen, componentDefinition: C
 
 	const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
 	customElements.define(name, elementClass, elementRegistryOptions);
+
+	return name;
 }
