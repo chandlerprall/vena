@@ -4,22 +4,24 @@
 <head>
   <style>
     html, body {
+      --token-color-foreground: #000;
+      --token-color-background: #fff;
+      --token-color-gutter: #d9d9d9;
+
+      --token-spacing-base-unit: 8px;
+
       overflow: hidden;
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
-
-      --token-color-foreground: #000;
-      --token-color-background: #fff;
-      --token-color-gutter: #d9d9d9;
+      color: var(--token-color-foreground);
+      background-color: var(--token-color-background);
     }
   </style>
 </head>
 
 <body>
-  <project-board></project-board>
-
   <script type="importmap">{
     "imports": {
       "vena": "../../build/index.js",
@@ -27,7 +29,7 @@
       "vena/jsx-runtime": "../../build/jsx-runtime.js"
     }
   }</script>
-  <script type="module" src="build/project-board.js"></script>
+  <script type="module" src="build/app.js"></script>
 </body>
 
 </html>

@@ -12,13 +12,13 @@ export function jsx(tagName: keyof JSX.IntrinsicElements | typeof Fragment, { ch
 	const parts: string[] = [];
 	for (let i = 0; i < attributeKeys.length; i++) {
 		let name = attributeKeys[i];
+		const value = attributes[name];
+
 		if (name === "className") {
 			name = "class";
 		} else if (name === "htmlFor") {
 			name = "for";
 		}
-
-		const value = attributes[name];
 
 		const attribute: Attribute = {
 			name,
@@ -39,8 +39,8 @@ export function jsx(tagName: keyof JSX.IntrinsicElements | typeof Fragment, { ch
 		const tagElement = customElements.get(tagName);
 		if (tagElement && tagElement.hasOwnProperty(ElementName)) {
 			tagName = (tagElement as CustomElementConstructor & { [ElementName]: keyof JSX.IntrinsicElements })[ElementName];
-			if (tagElement.hasOwnProperty(ElementIs)) {
-				const elementIs = (tagElement as CustomElementConstructor & { [ElementIs]: string })[ElementIs];
+			const elementIs = (tagElement as CustomElementConstructor & { [ElementIs]: string })[ElementIs];
+			if (elementIs) {
 				tagName = `${tagName} is="${elementIs}"` as keyof JSX.IntrinsicElements; // 🤫
 			}
 		}

@@ -1,20 +1,36 @@
-import { registerComponent } from "vena";
+import {registerComponent} from "vena";
 import ProjectColumn from "./project-column.js";
 
-export default registerComponent("project-board", ({ render }) => {
-	render(
-		<>
-			<style>{`
-        .columns {
-          display: flex;
-        }
-      `}</style>
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "project-board": {};
+    }
+  }
+}
 
-			<section className="columns">
-				<ProjectColumn title="asdf">
-					<span slot="card">Test</span>
-				</ProjectColumn>
-			</section>
-		</>
-	);
+export default registerComponent("project-board", ({render}) => {
+  render(
+    <>
+      <style>{`
+			:host {
+			  display: flex;
+			  gap: calc(var(--token-spacing-base-unit, 8px) * 4);
+			}
+		  `}</style>
+
+      <ProjectColumn>
+        <span slot="title">Backlog</span>
+        <span slot="card">Test</span>
+      </ProjectColumn>
+      <ProjectColumn>
+        <span slot="title">In Progress</span>
+        <span slot="card">Test</span>
+      </ProjectColumn>
+      <ProjectColumn>
+        <span slot="title">Complete</span>
+        <span slot="card">Test</span>
+      </ProjectColumn>
+    </>
+  );
 });

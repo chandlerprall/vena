@@ -7,13 +7,13 @@ export function jsx(tagName, { children, ...attributes }) {
     const parts = [];
     for (let i = 0; i < attributeKeys.length; i++) {
         let name = attributeKeys[i];
+        const value = attributes[name];
         if (name === "className") {
             name = "class";
         }
         else if (name === "htmlFor") {
             name = "for";
         }
-        const value = attributes[name];
         const attribute = {
             name,
             type: name.startsWith("on") ? "handler" : "attribute",
@@ -32,8 +32,8 @@ export function jsx(tagName, { children, ...attributes }) {
         const tagElement = customElements.get(tagName);
         if (tagElement && tagElement.hasOwnProperty(ElementName)) {
             tagName = tagElement[ElementName];
-            if (tagElement.hasOwnProperty(ElementIs)) {
-                const elementIs = tagElement[ElementIs];
+            const elementIs = tagElement[ElementIs];
+            if (elementIs) {
                 tagName = `${tagName} is="${elementIs}"`; // 🤫
             }
         }

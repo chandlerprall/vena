@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "dev": "tsc --watch"
+    "tsc-dev": "tsc --watch",
+    "dev": "node ./dev.js"
   }
 }

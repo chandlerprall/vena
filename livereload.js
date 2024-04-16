@@ -1,6 +1,5 @@
-import { watch, existsSync } from 'fs';
+import { watch, existsSync, readFileSync } from 'fs';
 import { WebSocketServer } from 'ws';
-import { resolve } from 'path';
 
 const projectDir = process.cwd();
 
@@ -29,6 +28,14 @@ watch(
   },
   (eventType, filename) => {
     if (!existsSync(filename)) return;
+
+    try {
+      const fileSrc = readFileSync(filename, 'utf-8');
+      if (fileSrc.includes('registerComponent(') === false) return;
+    } catch(e) {
+      return;
+    }
+
     if (eventType === 'change') {
       connections.forEach((ws) => {
         ws.send(JSON.stringify({ type: 'reload', filename }));
