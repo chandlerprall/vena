@@ -74,12 +74,19 @@ declare global {
 		type Signallable<T> = {
 			[key in keyof T]: T[key] | Signal<T[key]>;
 		};
-		type HTMLAttributes<T> = Signallable<Partial<Omit<T, "children">> & Partial<GlobalEventHandlers>>;
+		type HTMLAttributes<T> = Signallable<T & Partial<GlobalEventHandlers>> &
+			{
+				slot?: string | Signal<string>;
+				style?: string | Partial<CSSStyleDeclaration> | Signal<string | Partial<CSSStyleDeclaration>>;
+			};
 
-		export type MappedIntrinsicElements = {
-			[Element in keyof HTMLElementTagNameMap]: HTMLAttributes<HTMLElementTagNameMap[Element]>;
+		type _VenaIntrinsicElements = {
+			[Element in keyof HTMLElementTagNameMap]: Partial<Omit<HTMLElementTagNameMap[Element], 'style'>>;
 		};
-		export interface IntrinsicElements extends MappedIntrinsicElements {}
+		export interface VenaIntrinsicElements extends _VenaIntrinsicElements {}
+		export type IntrinsicElements = {
+			[Element in keyof VenaIntrinsicElements]: HTMLAttributes<VenaIntrinsicElements[Element]>;
+		};
 
 		export type Element = ComponentDefinition;
 	}

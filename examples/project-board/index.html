@@ -2,13 +2,24 @@
 <html>
 
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+
   <style>
     html, body {
       --token-color-foreground: #000;
       --token-color-background: #fff;
-      --token-color-gutter: #d9d9d9;
+      --token-color-border: #decdae;
+      --token-color-shaded: #fff9f3;
 
       --token-spacing-base-unit: 8px;
+
+      --token-font-size-down: 0.875rem;
 
       overflow: hidden;
       margin: 0;
@@ -17,6 +28,23 @@
       width: 100%;
       color: var(--token-color-foreground);
       background-color: var(--token-color-background);
+      font-family: "Roboto", sans-serif;
+      font-size: 14px;
+    }
+
+    code {
+      font-family: "Roboto Mono", monospace;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    code em {
+      font-style: italic;
+    }
+
+    code strong {
+      font-weight: 700;
     }
   </style>
 </head>

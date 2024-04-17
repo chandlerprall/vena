@@ -1,10 +1,17 @@
 import {registerComponent} from "vena";
+import ProjectCard from "./project-card.js";
 import ProjectColumn from "./project-column.js";
+
+export interface Card {
+  body: string;
+}
 
 declare global {
   namespace JSX {
-    interface IntrinsicElements {
-      "project-board": {};
+    interface VenaIntrinsicElements {
+      "project-board": {
+        cards?: Card[];
+      };
     }
   }
 }
@@ -21,15 +28,16 @@ export default registerComponent("project-board", ({render}) => {
 
       <ProjectColumn>
         <span slot="title">Backlog</span>
-        <span slot="card">Test</span>
+        <ProjectCard slot="card">Test</ProjectCard>
+        <ProjectCard slot="card">Test</ProjectCard>
+        <ProjectCard slot="card">Test</ProjectCard>
       </ProjectColumn>
       <ProjectColumn>
         <span slot="title">In Progress</span>
-        <span slot="card">Test</span>
+        <ProjectCard slot="card">Test</ProjectCard>
       </ProjectColumn>
       <ProjectColumn>
         <span slot="title">Complete</span>
-        <span slot="card">Test</span>
       </ProjectColumn>
     </>
   );

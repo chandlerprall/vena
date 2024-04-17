@@ -1,0 +1,51 @@
+import { registerComponent } from 'vena';
+
+declare global {
+  namespace JSX {
+    interface VenaIntrinsicElements {
+      'project-card': {};
+    }
+  }
+}
+
+export default registerComponent('project-card', ({ render }) => {
+  render(
+    <>
+      <style>{`
+        .card {
+          display: block;
+          padding: var(--token-spacing-base-unit);
+          border-radius: 0.5rem;
+          background-color: var(--token-color-shaded, #f0e4fc);
+          transform: translateY(0px);
+          box-shadow: 0 0 var(--token-spacing-base-unit) rgba(0, 0, 0, 0.1);
+          transition: box-shadow 0.1s, background-color 0.1s, transform 0.1s;
+          
+          background-color: color-mix(in srgb, var(--token-color-shaded, #f0e4fc), rgb(255, 255, 255) 50%);
+          
+          &:not(:has(.content:hover)) {
+            cursor: grab;
+            
+            &:active {
+              cursor: grabbing;
+              box-shadow: 0px 3px var(--token-spacing-base-unit) rgba(0, 0, 0, 0.3);
+              transform: translateY(-2px);
+            }
+          }
+          
+          &:hover {
+            background-color: color-mix(in srgb, var(--token-color-shaded, #f0e4fc), rgb(255, 255, 255) 70%);
+            box-shadow: 0 0px var(--token-spacing-base-unit) rgba(0, 0, 0, 0.2);
+          }
+        }
+        
+        .content {
+          font-size: var(--token-font-size-down);
+        }
+      `}</style>
+      <div className="card">
+        <code><slot className="content"/></code>
+      </div>
+    </>,
+  );
+});
