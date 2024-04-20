@@ -9,7 +9,7 @@ export declare class Signal<T = any> {
     static from<T extends Signal[]>(...signals: T): Signal<FromSignals<T>>;
     static signalValueArray<T extends Signal[]>(...signals: T): SignalArrayType<FromSignals<T>>;
     [SignalSource]: undefined | Signal | SignalArrayType;
-    constructor(valueOrSignal?: T | Signal<T>, transform?: (value: unknown) => T);
+    constructor(valueOrSignal?: T | Signal<T>, transform?: (value: any) => T);
     disconnectFromSource(): void;
     get dirty(): boolean;
     set dirty(isDirty: boolean);
@@ -17,7 +17,7 @@ export declare class Signal<T = any> {
     set value(valueOrSignal: T);
     on(listener: Signal | ((value: T) => void), immediate?: boolean): void;
     off(listener: Signal | ((value: T) => void)): void;
-    map(transform: (value: unknown) => T): Signal<T>;
+    map<O>(transform: (value: T) => O): Signal<O>;
     toString(): string | undefined;
 }
 export declare function afterUpdates(fn: () => void): Promise<void>;

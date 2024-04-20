@@ -239,6 +239,19 @@ it('updates without getting stuck in a loop', async () => {
   expect(d.dirty).to.be.false;
 });
 
+it('does not break propagation rules', async () => {
+  const signal = new Signal(0);
+  const listener = fn(() => {});
+
+  signal.on(listener)
+  signal.value = 1;
+  signal.on(listener);
+
+  await afterUpdates();
+  expect(listener.calls).to.have.length(1);
+  expect(listener.calls[0]).to.deep.equal([1]);
+});
+
 async function it(name, test) {
   try {
     await test();

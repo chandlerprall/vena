@@ -32,9 +32,10 @@ export class Signal<T = any> {
 
   #dirty = false;
   #listeners: Array<Signal | ((value: T) => void)> = [];
+  #propagation: Function | undefined;
   #isPropagating = false;
 
-  constructor(valueOrSignal?: T | Signal<T>, transform?: (value: unknown) => T) {
+  constructor(valueOrSignal?: T | Signal<T>, transform?: (value: any) => T) {
     this.#transform = transform;
 
     if (isSignalValue(valueOrSignal)) {
@@ -120,31 +121,39 @@ export class Signal<T = any> {
 
   #propagate() {
     if (this.#listeners.length === 0) return;
-
-    for (const listener of this.#listeners) {
+        for (const listener of this.#listeners) {
       if (listener instanceof Signal) {
         listener.dirty = true;
       }
     }
 
-    if (!this.#isPropagating) {
+    if (this.#isPropagating) {
+      console.warn('Signal loop detected in signal', this);
+    }
+
+    if (!this.#propagation) {
+      queueMicrotask(() => this.#propagation?.());
+    }
+
+    const currentListeners = [...this.#listeners];
+
+    this.#propagation = () => {
       this.#isPropagating = true;
 
-      queueMicrotask(() => {
-        for (const listener of this.#listeners) {
-          if (listener instanceof Signal === false) {
-            listener(this.value);
-          }
+      for (const listener of currentListeners) {
+        if (!(listener instanceof Signal)) {
+          listener(this.value);
         }
-        afterUpdates(() => {
-          this.#isPropagating = false;
-        });
+      }
+      afterUpdates(() => {
+        this.#propagation = undefined;
+        this.#isPropagating = false;
       });
-    }
+    };
   }
 
-  map(transform: (value: unknown) => T) {
-    return new Signal(this, transform);
+  map<O>(transform: (value: T) => O) {
+    return new Signal<O>(this as any as O, transform);
   }
 
   toString() {

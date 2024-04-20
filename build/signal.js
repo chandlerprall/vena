@@ -23,6 +23,7 @@ export class Signal {
     #transform;
     #dirty = false;
     #listeners = [];
+    #propagation;
     #isPropagating = false;
     constructor(valueOrSignal, transform) {
         this.#transform = transform;
@@ -111,19 +112,25 @@ export class Signal {
                 listener.dirty = true;
             }
         }
-        if (!this.#isPropagating) {
-            this.#isPropagating = true;
-            queueMicrotask(() => {
-                for (const listener of this.#listeners) {
-                    if (listener instanceof Signal === false) {
-                        listener(this.value);
-                    }
-                }
-                afterUpdates(() => {
-                    this.#isPropagating = false;
-                });
-            });
+        if (this.#isPropagating) {
+            console.warn('Signal loop detected in signal', this);
         }
+        if (!this.#propagation) {
+            queueMicrotask(() => this.#propagation?.());
+        }
+        const currentListeners = [...this.#listeners];
+        this.#propagation = () => {
+            this.#isPropagating = true;
+            for (const listener of currentListeners) {
+                if (!(listener instanceof Signal)) {
+                    listener(this.value);
+                }
+            }
+            afterUpdates(() => {
+                this.#propagation = undefined;
+                this.#isPropagating = false;
+            });
+        };
     }
     map(transform) {
         return new Signal(this, transform);
