@@ -11,6 +11,7 @@ function isSignalValue(value: unknown): value is SignalValueType {
   return value instanceof Signal || isSignalArray(value);
 }
 
+
 type FromSignals<T> = T extends [Signal<infer Head>, ...infer Tail] ? [Head, ...FromSignals<Tail>] : T extends [Signal<infer Last>] ? [Last] : [];
 export class Signal<T = any> {
   static from<T extends Signal[]>(...signals: T): Signal<FromSignals<T>> {
@@ -161,7 +162,70 @@ export class Signal<T = any> {
   }
 }
 
-export function afterUpdates(fn: () => void) {
+export function afterUpdates(fn?: () => void) {
   if (fn) queueMicrotask(fn);
   return new Promise<void>(resolve => queueMicrotask(resolve));
 }
+
+class _SignalProxy<T extends object> extends Signal<T> {
+  #signal: Signal<T>;
+  #isUpdating = false;
+
+  constructor(base: T) {
+    super(base);
+
+    this.#signal = new Signal(base);
+    const _this = this;
+
+    // @ts-expect-error
+    return new Proxy(
+      base,
+      {
+        get(target, prop: string | SignalProxyProperties, receiver) {
+          if (prop === 'on' || prop === 'off' || prop === 'map' || prop === 'toString') {
+            return _this.#signal[prop].bind(_this.#signal);
+          } else if (prop === 'value' || prop === 'dirty') {
+            return _this.#signal[prop];
+          }
+
+          _this.#queueUpdate();
+          const value = target[prop as keyof typeof target];
+          if (typeof value === 'function') {
+            return value.bind(target);
+          }
+          return value;
+        },
+        set(target, prop, value, receiver) {
+          if (prop === 'value' || prop === 'dirty') {
+            // @ts-expect-error
+            _this.#signal[prop] = value;
+            return true;
+          }
+
+          _this.#queueUpdate();
+          target[prop as keyof T] = value;
+          return true;
+        },
+        getPrototypeOf(target: T) {
+          return Signal.prototype;
+        }
+      }
+    )
+  }
+
+  #queueUpdate() {
+    if (this.#isUpdating) return;
+    this.#isUpdating = true;
+    this.#signal.value = this.#signal.value;
+
+    afterUpdates(() => {
+      this.#isUpdating = false;
+    });
+  }
+}
+
+type SignalProxyProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
+// @ts-expect-error
+export const SignalProxy: {
+  new <T extends object, RT = Omit<T, SignalProxyProperties> & Pick<Signal<T>, SignalProxyProperties>>(base: T): RT;
+} = _SignalProxy;

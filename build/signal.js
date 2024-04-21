@@ -144,4 +144,54 @@ export function afterUpdates(fn) {
         queueMicrotask(fn);
     return new Promise(resolve => queueMicrotask(resolve));
 }
+class _SignalProxy extends Signal {
+    #signal;
+    #isUpdating = false;
+    constructor(base) {
+        super(base);
+        this.#signal = new Signal(base);
+        const _this = this;
+        // @ts-expect-error
+        return new Proxy(base, {
+            get(target, prop, receiver) {
+                if (prop === 'on' || prop === 'off' || prop === 'map' || prop === 'toString') {
+                    return _this.#signal[prop].bind(_this.#signal);
+                }
+                else if (prop === 'value' || prop === 'dirty') {
+                    return _this.#signal[prop];
+                }
+                _this.#queueUpdate();
+                const value = target[prop];
+                if (typeof value === 'function') {
+                    return value.bind(target);
+                }
+                return value;
+            },
+            set(target, prop, value, receiver) {
+                if (prop === 'value' || prop === 'dirty') {
+                    // @ts-expect-error
+                    _this.#signal[prop] = value;
+                    return true;
+                }
+                _this.#queueUpdate();
+                target[prop] = value;
+                return true;
+            },
+            getPrototypeOf(target) {
+                return Signal.prototype;
+            }
+        });
+    }
+    #queueUpdate() {
+        if (this.#isUpdating)
+            return;
+        this.#isUpdating = true;
+        this.#signal.value = this.#signal.value;
+        afterUpdates(() => {
+            this.#isUpdating = false;
+        });
+    }
+}
+// @ts-expect-error
+export const SignalProxy = _SignalProxy;
 //# sourceMappingURL=signal.js.map

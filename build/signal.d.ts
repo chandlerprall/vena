@@ -20,5 +20,9 @@ export declare class Signal<T = any> {
     map<O>(transform: (value: T) => O): Signal<O>;
     toString(): string | undefined;
 }
-export declare function afterUpdates(fn: () => void): Promise<void>;
+export declare function afterUpdates(fn?: () => void): Promise<void>;
+type SignalProxyProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
+export declare const SignalProxy: {
+    new <T extends object, RT = Omit<T, SignalProxyProperties> & Pick<Signal<T>, SignalProxyProperties>>(base: T): RT;
+};
 export {};

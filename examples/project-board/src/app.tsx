@@ -1,8 +1,15 @@
 import 'vena/live';
-import { element, Signal } from 'vena';
+import { element, Signal, SignalProxy } from 'vena';
 import ProjectBoard, { Card } from './project-board.js';
 import ProjectColumn from './project-column.js';
 import ProjectCard from './project-card.js';
+
+const map = new SignalProxy(new Map<string, number>());
+map.on(v => console.log(v));
+map.set('a', 1);
+map.set('b', 1);
+
+map.on(v => console.log(v));
 
 const bucketNames = ['backlog', 'in-progress', 'complete'] as const;
 type BucketName = typeof bucketNames[number];
