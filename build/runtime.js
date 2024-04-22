@@ -116,7 +116,7 @@ export const html = (...args) => {
     const { html, hydrations } = render(...args);
     const document = domParser.parseFromString(html, "text/html");
     hydrate(document.body, hydrations);
-    // @ts-ignore
+    // @ts-expect-error
     return new ContainedNodeArray(...document.body.childNodes);
 };
 let _id = 0;
@@ -230,7 +230,7 @@ export const ALL_ATTRIBUTES = Symbol("all attributes");
 const definedElements = new Map();
 const liveElements = new Map();
 const magicBagOfHolding = {};
-// @ts-ignore
+// @ts-expect-error
 window.magicBagOfHolding = magicBagOfHolding;
 const collectValue = (id) => {
     const value = magicBagOfHolding[id];
@@ -349,11 +349,11 @@ export function hydrate(owningElement, hydrations) {
         else if (type === "booleanattribute") {
             const { id, attribute, part } = hydration;
             const element = owningElement.shadowRoot?.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement;
-            if (!part) {
+            if (!part || part === "false") {
                 element.removeAttribute(attribute.name);
             }
             else {
-                element.setAttribute(attribute.name, "");
+                element.setAttribute(attribute.name, "true");
             }
         }
         else if (type === "attributemap") {
@@ -530,18 +530,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
             if (value?.match(/^_unique_id_\d+/)) {
                 // @TODO: garbage collection (call off on component disconnectedCallback?)
                 const data = collectValue(value);
-                if (data instanceof Signal) {
-                    data.on((nextValue) => {
-                        this.attributeValues[attributeName] = nextValue;
-                    });
-                    this.attributeValues[attributeName].on((nextValue) => {
-                        data.value = nextValue;
-                    });
-                    this.attributeValues[attributeName].value = data.value;
-                }
-                else {
-                    this.attributeValues[attributeName].value = data;
-                }
+                this.attributeValues[attributeName] = data;
             }
             else {
                 this.attributeValues[attributeName] = value;
@@ -551,6 +540,9 @@ export function registerComponent(name, componentDefinition, options = {}) {
         initialize() {
             const element = this;
             const componentDefinition = definedElements.get(name);
+            for (const key in this.state) {
+                this.state[key].offAll();
+            }
             const context = new Proxy({}, {
                 get(target, key) {
                     let currentElement = element.parentElement;

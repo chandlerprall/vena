@@ -241,7 +241,7 @@ it('updates without getting stuck in a loop', async () => {
 
 it('does not break propagation rules', async () => {
   const signal = new Signal(0);
-  const listener = fn(() => {});
+  const listener = fn(() => { });
 
   signal.on(listener)
   signal.value = 1;
@@ -252,10 +252,19 @@ it('does not break propagation rules', async () => {
   expect(listener.calls[0]).to.deep.equal([1]);
 });
 
-async function it(name, test) {
+function it(name, test) {
   try {
-    await test();
-    console.log(`✅ ${name}`);
+    const result = test();
+    if (result && result.then) {
+      result
+        .then(() => console.log(`✅ ${name}`))
+        .catch(e => {
+          console.error(`❌ ${name}`);
+          console.error(e);
+        });
+    } else {
+      console.log(`✅ ${name}`);
+    }
   } catch (e) {
     console.error(`❌ ${name}`);
     console.error(e);

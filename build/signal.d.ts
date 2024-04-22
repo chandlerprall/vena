@@ -17,18 +17,14 @@ export declare class Signal<T = any> {
     set value(valueOrSignal: T);
     on(listener: Signal | ((value: T) => void), immediate?: boolean): void;
     off(listener: Signal | ((value: T) => void)): void;
+    offAll(): void;
     map<O>(transform: (value: T) => O): Signal<O>;
     toString(): string | undefined;
 }
 export declare function afterUpdates(fn?: () => void): Promise<void>;
-declare class _ProxySignal<T extends object> extends Signal<T> {
-    #private;
-    static from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): _ProxySignal<O>;
-    constructor(base: T, transform?: (value: any) => T);
-}
-type ProxySignalProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
+type ProxySignalProperties = "on" | "off" | "map" | "toString" | "value" | "dirty";
 export declare const ProxySignal: {
     new <T extends object>(base: T): Signal<T> & Omit<T, ProxySignalProperties>;
-    from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): _ProxySignal<O>;
+    from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): Signal<O> & Omit<O, ProxySignalProperties>;
 };
 export {};

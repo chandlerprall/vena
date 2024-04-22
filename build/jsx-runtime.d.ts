@@ -13,9 +13,9 @@ declare global {
             style?: string | Partial<CSSStyleDeclaration> | Signal<string | Partial<CSSStyleDeclaration>>;
         };
         type _VenaIntrinsicElements = {
-            [Element in keyof HTMLElementTagNameMap]: Partial<Omit<HTMLElementTagNameMap[Element], 'style'>>;
+            [Element in keyof HTMLElementTagNameMap]: Partial<Omit<HTMLElementTagNameMap[Element], "style">>;
         };
-        interface VenaIntrinsicElements extends _VenaIntrinsicElements {
+        interface VenaIntrinsicElements extends _VenaIntrinsicElements, Vena.Elements {
         }
         type IntrinsicElements = {
             [Element in keyof VenaIntrinsicElements]: HTMLAttributes<VenaIntrinsicElements[Element]>;

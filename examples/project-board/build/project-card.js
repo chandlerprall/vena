@@ -1,6 +1,8 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "vena/jsx-runtime";
-import { registerComponent } from 'vena';
-export default registerComponent('project-card', ({ render }) => {
+import { registerComponent } from "vena";
+import { ProjectBoardContext } from "./project-board.js";
+export default registerComponent("project-card", ({ render, attributes, refs, context }) => {
+    const { isDragging } = context[ProjectBoardContext];
     render(_jsxs(_Fragment, { children: [_jsx("style", { children: `
         .card {
           display: block;
@@ -32,6 +34,19 @@ export default registerComponent('project-card', ({ render }) => {
         .content {
           font-size: var(--token-font-size-down);
         }
-      ` }), _jsx("div", { className: "card", children: _jsx("code", { children: _jsx("slot", { className: "content" }) }) })] }));
+      ` }), _jsx("div", { className: "card", draggable: true, id: "card", children: _jsx("code", { children: _jsx("slot", { className: "content" }) }) })] }));
+    refs.card.addEventListener("dragstart", (e) => {
+        const { dataTransfer } = e;
+        if (dataTransfer) {
+            dataTransfer.effectAllowed = "move";
+            dataTransfer.setData("application/json", JSON.stringify(attributes.dragdata.value));
+            setTimeout(() => {
+                isDragging.value = true;
+            });
+        }
+    });
+    refs.card.addEventListener("dragend", () => {
+        isDragging.value = false;
+    });
 });
 //# sourceMappingURL=project-card.js.map

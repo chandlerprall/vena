@@ -1,5 +1,5 @@
-const SignalSource = Symbol('SignalSource');
-const SignalArray = Symbol('SignalArray');
+const SignalSource = Symbol("SignalSource");
+const SignalArray = Symbol("SignalArray");
 function isSignalArray(value) {
     return Array.isArray(value) && SignalArray in value;
 }
@@ -102,7 +102,10 @@ export class Signal {
         }
     }
     off(listener) {
-        this.#listeners = this.#listeners.filter(l => l !== listener);
+        this.#listeners = this.#listeners.filter((l) => l !== listener);
+    }
+    offAll() {
+        this.#listeners = [];
     }
     #propagate() {
         if (this.#listeners.length === 0)
@@ -113,7 +116,7 @@ export class Signal {
             }
         }
         if (this.#isPropagating) {
-            console.warn('Signal loop detected in signal', this);
+            console.warn("Signal loop detected in signal", this);
         }
         if (!this.#propagation) {
             queueMicrotask(() => this.#propagation?.());
@@ -142,7 +145,7 @@ export class Signal {
 export function afterUpdates(fn) {
     if (fn)
         queueMicrotask(fn);
-    return new Promise(resolve => queueMicrotask(resolve));
+    return new Promise((resolve) => queueMicrotask(resolve));
 }
 // @ts-expect-error
 class _ProxySignal extends Signal {
@@ -150,7 +153,6 @@ class _ProxySignal extends Signal {
         // @ts-expect-error
         return new _ProxySignal(Signal.signalValueArray(...signals), transform);
     }
-    ;
     #signal;
     #isUpdating = false;
     constructor(base, transform) {
@@ -160,39 +162,40 @@ class _ProxySignal extends Signal {
         // @ts-expect-error
         return new Proxy(base, {
             get(target, prop, receiver) {
-                if (prop === 'on' || prop === 'off' || prop === 'map' || prop === 'toString') {
+                if (prop === "on" || prop === "off" || prop === "map" || prop === "toString") {
                     return _this.#signal[prop].bind(_this.#signal);
                 }
-                else if (prop === 'value' || prop === 'dirty') {
+                else if (prop === "value" || prop === "dirty") {
                     return _this.#signal[prop];
                 }
                 _this.#queueUpdate();
-                const value = target[prop];
-                if (typeof value === 'function') {
-                    return value.bind(target);
+                const value = _this.#signal.value[prop];
+                // const value = target[prop as keyof typeof target];
+                if (typeof value === "function") {
+                    return value.bind(_this.#signal.value);
                 }
                 return value;
             },
             set(target, prop, value, receiver) {
-                if (prop === 'value' || prop === 'dirty') {
+                if (prop === "value" || prop === "dirty") {
                     // @ts-expect-error
                     _this.#signal[prop] = value;
                     return true;
                 }
                 _this.#queueUpdate();
-                target[prop] = value;
+                _this.#signal.value[prop] = value;
                 return true;
             },
             getPrototypeOf(target) {
                 return Signal.prototype;
-            }
+            },
         });
     }
     #queueUpdate() {
         if (this.#isUpdating)
             return;
         this.#isUpdating = true;
-        this.#signal.value = this.#signal.value;
+        this.#signal.dirty = true;
         afterUpdates(() => {
             this.#isUpdating = false;
         });

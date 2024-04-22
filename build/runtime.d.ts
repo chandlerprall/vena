@@ -74,16 +74,27 @@ interface ElementHydration {
 export type Hydration = DOMHydration | AttributeHydration | BooleanAttributeHydration | AttributeMapHydration | HandlerHydration | ElementHydration;
 export declare function hydrate(owningElement: HTMLElement, hydrations: Hydration[]): void;
 export declare const element: (args_0: ComponentDefinition | TemplateStringsArray, ...args_1: any[]) => HTMLElement;
-type StringWithHyphen = `${string}-${string}`;
+declare global {
+    namespace Vena {
+        interface Context {
+        }
+        interface Elements {
+        }
+    }
+}
 type ComponentState = <T>(initialState: T) => {
     [key in keyof T]: Signal<T[key]>;
 };
-type ComponentDefinitionFn = (options: {
+type ComponentDefinitionFn<T extends keyof Vena.Elements> = (options: {
     element: HTMLElement;
     render: (strings: TemplateStringsArray | ComponentDefinition, ...rest: any[]) => void;
     refs: Record<string, Element>;
-    attributes: Record<string, any>;
-    context: Record<string, unknown>;
+    attributes: {
+        [key in keyof Vena.Elements[T]]: Signal<Vena.Elements[T]>;
+    };
+    context: {
+        [key in keyof Vena.Context]: Vena.Context[key];
+    };
     state: ComponentState;
 }) => void;
 interface ComponentDefinitionOptions {
@@ -93,5 +104,5 @@ interface ComponentDefinitionOptions {
 }
 export declare const ElementName: unique symbol;
 export declare const ElementIs: unique symbol;
-export declare function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options?: ComponentDefinitionOptions): T;
+export declare function registerComponent<T extends keyof Vena.Elements>(name: T, componentDefinition: ComponentDefinitionFn<T>, options?: ComponentDefinitionOptions): T;
 export {};

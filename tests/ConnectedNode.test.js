@@ -351,8 +351,23 @@ disconnect();
 update();
 isAGoodNeighbor();
 
-function it(message, test) {
-  test();
+function it(name, test) {
+  try {
+    const result = test();
+    if (result && result.then) {
+      result
+        .then(() => console.log(`✅ ${name}`))
+        .catch(e => {
+          console.error(`❌ ${name}`);
+          console.error(e);
+        });
+    } else {
+      console.log(`✅ ${name}`);
+    }
+  } catch (e) {
+    console.error(`❌ ${name}`);
+    console.error(e);
+  }
 }
 
 // create `childNodesWithoutComments` on HTMLElement as a shortcut for excluding placehoder comment nodes

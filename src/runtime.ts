@@ -138,7 +138,7 @@ export const html = (...args: [TemplateStringsArray, ...any[]]) => {
 	const { html, hydrations } = render(...args);
 	const document = domParser.parseFromString(html, "text/html");
 	hydrate(document.body, hydrations);
-	// @ts-ignore
+	// @ts-expect-error
 	return new ContainedNodeArray(...document.body.childNodes);
 };
 
@@ -247,7 +247,7 @@ const definedElements = new Map<string, ComponentDefinitionFn>();
 const liveElements = new Map<string, Set<HTMLElement & { initialize: () => void }>>();
 
 const magicBagOfHolding: Record<string, unknown> = {};
-// @ts-ignore
+// @ts-expect-error
 window.magicBagOfHolding = magicBagOfHolding;
 const collectValue = (id: string) => {
 	const value = magicBagOfHolding[id];
@@ -398,10 +398,10 @@ export function hydrate(owningElement: HTMLElement, hydrations: Hydration[]) {
 		} else if (type === "booleanattribute") {
 			const { id, attribute, part } = hydration;
 			const element = owningElement.shadowRoot?.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement;
-			if (!part) {
+			if (!part || part === "false") {
 				element.removeAttribute(attribute.name);
 			} else {
-				element.setAttribute(attribute.name, "");
+				element.setAttribute(attribute.name, "true");
 			}
 		} else if (type === "attributemap") {
 			// @TODO: garbage collection
@@ -486,15 +486,22 @@ const getElementContext = (element: Element) => {
 
 type StringWithHyphen = `${string}-${string}`;
 
+declare global {
+	namespace Vena {
+		interface Context {}
+    interface Elements {}
+	}
+}
+
 type ComponentState = <T>(initialState: T) => {
 	[key in keyof T]: Signal<T[key]>;
 };
-type ComponentDefinitionFn = (options: {
+type ComponentDefinitionFn<T extends keyof Vena.Elements> = (options: {
 	element: HTMLElement;
 	render: (strings: TemplateStringsArray | ComponentDefinition, ...rest: any[]) => void;
 	refs: Record<string, Element>;
-	attributes: Record<string, any>;
-	context: Record<string, unknown>;
+	attributes: { [key in keyof Vena.Elements[T]]: Signal<Vena.Elements[T]> };
+	context: { [key in keyof Vena.Context]: Vena.Context[key] };
 	state: ComponentState;
 }) => void;
 
@@ -506,7 +513,7 @@ interface ComponentDefinitionOptions {
 
 export const ElementName = Symbol("ElementName");
 export const ElementIs = Symbol("ElementIs");
-export function registerComponent<T extends StringWithHyphen>(name: T, componentDefinition: ComponentDefinitionFn, options: ComponentDefinitionOptions = {}): T {
+export function registerComponent<T extends keyof Vena.Elements>(name: T, componentDefinition: ComponentDefinitionFn<T>, options: ComponentDefinitionOptions = {}): T {
 	if (definedElements.has(name)) {
 		definedElements.set(name, componentDefinition);
 		const elements = Array.from(liveElements.get(name)!);
@@ -617,18 +624,7 @@ export function registerComponent<T extends StringWithHyphen>(name: T, component
 			if (value?.match(/^_unique_id_\d+/)) {
 				// @TODO: garbage collection (call off on component disconnectedCallback?)
 				const data = collectValue(value);
-
-				if (data instanceof Signal) {
-					data.on((nextValue) => {
-						this.attributeValues[attributeName] = nextValue;
-					});
-					this.attributeValues[attributeName].on((nextValue: unknown) => {
-						data.value = nextValue;
-					});
-					this.attributeValues[attributeName].value = data.value;
-				} else {
-					this.attributeValues[attributeName].value = data;
-				}
+				this.attributeValues[attributeName] = data;
 			} else {
 				this.attributeValues[attributeName] = value;
 			}
@@ -639,6 +635,10 @@ export function registerComponent<T extends StringWithHyphen>(name: T, component
 		initialize() {
 			const element = this;
 			const componentDefinition = definedElements.get(name)!;
+
+			for (const key in this.state) {
+				this.state[key].offAll();
+			}
 
 			const context = new Proxy(
 				{},
