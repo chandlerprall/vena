@@ -144,12 +144,18 @@ export function afterUpdates(fn) {
         queueMicrotask(fn);
     return new Promise(resolve => queueMicrotask(resolve));
 }
-class _SignalProxy extends Signal {
+// @ts-expect-error
+class _ProxySignal extends Signal {
+    static from(transform, ...signals) {
+        // @ts-expect-error
+        return new _ProxySignal(Signal.signalValueArray(...signals), transform);
+    }
+    ;
     #signal;
     #isUpdating = false;
-    constructor(base) {
-        super(base);
-        this.#signal = new Signal(base);
+    constructor(base, transform) {
+        super(base, transform);
+        this.#signal = new Signal(base, transform);
         const _this = this;
         // @ts-expect-error
         return new Proxy(base, {
@@ -193,5 +199,5 @@ class _SignalProxy extends Signal {
     }
 }
 // @ts-expect-error
-export const SignalProxy = _SignalProxy;
+export const ProxySignal = _ProxySignal;
 //# sourceMappingURL=signal.js.map

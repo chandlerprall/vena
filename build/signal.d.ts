@@ -6,7 +6,7 @@ type SignalArrayType<T = Array<Signal<unknown>>> = T & {
 type FromSignals<T> = T extends [Signal<infer Head>, ...infer Tail] ? [Head, ...FromSignals<Tail>] : T extends [Signal<infer Last>] ? [Last] : [];
 export declare class Signal<T = any> {
     #private;
-    static from<T extends Signal[]>(...signals: T): Signal<FromSignals<T>>;
+    static from<T extends Array<Signal>>(...signals: T): Signal<FromSignals<T>>;
     static signalValueArray<T extends Signal[]>(...signals: T): SignalArrayType<FromSignals<T>>;
     [SignalSource]: undefined | Signal | SignalArrayType;
     constructor(valueOrSignal?: T | Signal<T>, transform?: (value: any) => T);
@@ -21,8 +21,14 @@ export declare class Signal<T = any> {
     toString(): string | undefined;
 }
 export declare function afterUpdates(fn?: () => void): Promise<void>;
-type SignalProxyProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
-export declare const SignalProxy: {
-    new <T extends object, RT = Omit<T, SignalProxyProperties> & Pick<Signal<T>, SignalProxyProperties>>(base: T): RT;
+declare class _ProxySignal<T extends object> extends Signal<T> {
+    #private;
+    static from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): _ProxySignal<O>;
+    constructor(base: T, transform?: (value: any) => T);
+}
+type ProxySignalProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
+export declare const ProxySignal: {
+    new <T extends object>(base: T): Signal<T> & Omit<T, ProxySignalProperties>;
+    from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): _ProxySignal<O>;
 };
 export {};
