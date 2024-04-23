@@ -119,8 +119,8 @@ registerComponent('settings-app', ({ render, refs }) => {
 			<color-picker
 				initialvalue=${currentHex}
 				oncolor-picker-color=${({ detail }) => {
-        currentHex.value = detail;
-      }}
+      currentHex.value = detail;
+    }}
 			></color-picker>`;
   })}</div>
 	`;

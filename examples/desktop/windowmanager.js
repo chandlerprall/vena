@@ -67,4 +67,4 @@ export const launchWindow = (windowElement, options = {}) => {
   windowElement.focus();
 
   return windowElement;
-}
+};

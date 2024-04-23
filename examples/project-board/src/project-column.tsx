@@ -1,19 +1,19 @@
-import { registerComponent, element, afterUpdates } from "vena";
-import { ProjectBoardContext } from "./project-board.js";
+import { registerComponent, element, afterUpdates } from 'vena';
+import { ProjectBoardContext } from './project-board.js';
 
 declare global {
-	namespace Vena {
-		interface Elements {
-			"project-column": {};
-			"project-column-dropzone": {
-				expanded: boolean;
-			};
-		}
-	}
+  namespace Vena {
+    interface Elements {
+      'project-column': {};
+      'project-column-dropzone': {
+        expanded: boolean;
+      };
+    }
+  }
 }
 
-registerComponent("project-column-dropzone", ({ render, attributes }) => {
-	render`
+registerComponent('project-column-dropzone', ({ render, attributes }) => {
+  render`
   <style>
   :host {
     width: 100%;
@@ -45,67 +45,67 @@ registerComponent("project-column-dropzone", ({ render, attributes }) => {
   </style>
 
   <div
-    class=${attributes.expanded.map((expanded) => (expanded ? "isdragging" : undefined))}
+    class=${attributes.expanded.map((expanded) => (expanded ? 'isdragging' : undefined))}
     ondragenter=${(e: DragEvent) => {
-			if (e.dataTransfer) {
-				e.preventDefault();
-				e.dataTransfer.dropEffect = "move";
-			}
-		}}
+    if (e.dataTransfer) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+  }}
     ondragover=${(e: DragEvent) => {
-			if (e.dataTransfer) {
-				e.preventDefault();
-				e.dataTransfer.dropEffect = "move";
-			}
-		}}
+    if (e.dataTransfer) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+  }}
     ondrop=${(e: DragEvent) => {
-			if (e.dataTransfer) {
-				e.preventDefault();
-				e.dataTransfer.dropEffect = "move";
-				console.log(e.dataTransfer.getData("application/json"));
-			}
-		}}
+    if (e.dataTransfer) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      console.log(e.dataTransfer.getData('application/json'));
+    }
+  }}
   >Drop here</div>
   `;
 });
 
-export default registerComponent("project-column", ({ render, context, refs }) => {
-	const { isDragging } = context[ProjectBoardContext];
+export default registerComponent('project-column', ({ render, context, refs }) => {
+  const { isDragging } = context[ProjectBoardContext];
 
-	function clearDropZones() {
-		const dropZones = (refs.cards as HTMLSlotElement).assignedElements().filter((x) => x.tagName === "PROJECT-COLUMN-DROPZONE");
-		for (const dropZone of dropZones) {
-			dropZone.remove();
-		}
-	}
+  function clearDropZones() {
+    const dropZones = (refs.cards as HTMLSlotElement).assignedElements().filter((x) => x.tagName === 'PROJECT-COLUMN-DROPZONE');
+    for (const dropZone of dropZones) {
+      dropZone.remove();
+    }
+  }
 
-	function updateDropZones() {
-		clearDropZones();
+  function updateDropZones() {
+    clearDropZones();
 
-		const cards = (refs.cards as HTMLSlotElement).assignedElements();
-		if (cards.length) {
-			const dropZone = element`<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-			cards[0].insertAdjacentElement("beforebegin", dropZone);
-		}
-		for (const card of cards) {
-			const dropZone = element`<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-			card.insertAdjacentElement("afterend", dropZone);
-		}
-	}
+    const cards = (refs.cards as HTMLSlotElement).assignedElements();
+    if (cards.length) {
+      const dropZone = element`<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
+      cards[0].insertAdjacentElement('beforebegin', dropZone);
+    }
+    for (const card of cards) {
+      const dropZone = element`<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
+      card.insertAdjacentElement('afterend', dropZone);
+    }
+  }
 
-	isDragging.on((isDragging) => {
-		if (isDragging) {
-		} else {
-		}
-	});
+  isDragging.on((isDragging) => {
+    if (isDragging) {
+    } else {
+    }
+  });
 
-	afterUpdates(() => {
-		updateDropZones();
-	});
+  afterUpdates(() => {
+    updateDropZones();
+  });
 
-	render(
-		<>
-			<style>{`
+  render(
+    <>
+      <style>{`
 
         :host {
           --project-column-padding: calc(var(--token-spacing-base-unit, 8px) * 0.5);
@@ -149,11 +149,11 @@ export default registerComponent("project-column", ({ render, context, refs }) =
         }
       `}</style>
 
-			<slot name="title" />
+      <slot name="title"/>
 
-			<slot id="cards" className="cards" name="card">
-				<project-column-dropzone expanded={isDragging}>test</project-column-dropzone>
-			</slot>
-		</>
-	);
+      <slot id="cards" className="cards" name="card">
+        <project-column-dropzone expanded={isDragging}>test</project-column-dropzone>
+      </slot>
+    </>,
+  );
 });

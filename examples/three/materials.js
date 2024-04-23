@@ -1,4 +1,12 @@
-import { MeshBasicMaterial, MeshLambertMaterial, MeshNormalMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, MeshToonMaterial } from 'three';
+import {
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  MeshNormalMaterial,
+  MeshPhongMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  MeshToonMaterial,
+} from 'three';
 import { registerComponent, ALL_ATTRIBUTES } from 'vena';
 import { GraphContext } from './context.js';
 
@@ -14,7 +22,7 @@ import { GraphContext } from './context.js';
   registerComponent(name, ({ render, attributes, context }) => {
     const material = new constructor(Object.fromEntries(
       Object.entries(attributes[ALL_ATTRIBUTES].value)
-        .map(([key, value]) => [key, value === 'true' || value === 'false' ? value === 'true' : value])
+        .map(([key, value]) => [key, value === 'true' || value === 'false' ? value === 'true' : value]),
     ));
 
     attributes[ALL_ATTRIBUTES].on((attrs) => {

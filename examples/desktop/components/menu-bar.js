@@ -2,7 +2,7 @@ import { registerComponent } from 'vena';
 
 registerComponent('menu-bar', ({ render }) => {
 
-	render`
+  render`
 <style>
 :host {
 	height: inherit;

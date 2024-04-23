@@ -1,7 +1,7 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "vena/jsx-runtime";
-import { registerComponent, element, afterUpdates } from "vena";
-import { ProjectBoardContext } from "./project-board.js";
-registerComponent("project-column-dropzone", ({ render, attributes }) => {
+import { registerComponent, element, afterUpdates } from 'vena';
+import { ProjectBoardContext } from './project-board.js';
+registerComponent('project-column-dropzone', ({ render, attributes }) => {
     render `
   <style>
   :host {
@@ -34,33 +34,33 @@ registerComponent("project-column-dropzone", ({ render, attributes }) => {
   </style>
 
   <div
-    class=${attributes.expanded.map((expanded) => (expanded ? "isdragging" : undefined))}
+    class=${attributes.expanded.map((expanded) => (expanded ? 'isdragging' : undefined))}
     ondragenter=${(e) => {
         if (e.dataTransfer) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
+            e.dataTransfer.dropEffect = 'move';
         }
     }}
     ondragover=${(e) => {
         if (e.dataTransfer) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
+            e.dataTransfer.dropEffect = 'move';
         }
     }}
     ondrop=${(e) => {
         if (e.dataTransfer) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
-            console.log(e.dataTransfer.getData("application/json"));
+            e.dataTransfer.dropEffect = 'move';
+            console.log(e.dataTransfer.getData('application/json'));
         }
     }}
   >Drop here</div>
   `;
 });
-export default registerComponent("project-column", ({ render, context, refs }) => {
+export default registerComponent('project-column', ({ render, context, refs }) => {
     const { isDragging } = context[ProjectBoardContext];
     function clearDropZones() {
-        const dropZones = refs.cards.assignedElements().filter((x) => x.tagName === "PROJECT-COLUMN-DROPZONE");
+        const dropZones = refs.cards.assignedElements().filter((x) => x.tagName === 'PROJECT-COLUMN-DROPZONE');
         for (const dropZone of dropZones) {
             dropZone.remove();
         }
@@ -70,11 +70,11 @@ export default registerComponent("project-column", ({ render, context, refs }) =
         const cards = refs.cards.assignedElements();
         if (cards.length) {
             const dropZone = element `<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-            cards[0].insertAdjacentElement("beforebegin", dropZone);
+            cards[0].insertAdjacentElement('beforebegin', dropZone);
         }
         for (const card of cards) {
             const dropZone = element `<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-            card.insertAdjacentElement("afterend", dropZone);
+            card.insertAdjacentElement('afterend', dropZone);
         }
     }
     isDragging.on((isDragging) => {

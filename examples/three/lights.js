@@ -17,8 +17,8 @@ import { applyValue } from './utils.js';
     if (light.shadow) {
       light.castShadow = true;
       light.shadow.camera.top = 100;
-      light.shadow.camera.bottom = - 100;
-      light.shadow.camera.left = - 100;
+      light.shadow.camera.bottom = -100;
+      light.shadow.camera.left = -100;
       light.shadow.camera.right = 100;
       light.shadow.camera.near = 1;
       light.shadow.camera.far = 30;
@@ -32,6 +32,7 @@ import { applyValue } from './utils.js';
         applyValue(light, key, attrs[key]);
       }
     }
+
     attributes[ALL_ATTRIBUTES].on(applyAttributes);
     applyAttributes(attributes[ALL_ATTRIBUTES].value);
 

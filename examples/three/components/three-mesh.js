@@ -5,7 +5,7 @@ import { GraphContext } from '../context.js';
 registerComponent('three-mesh', ({ render, attributes, context }) => {
   const mesh = new Mesh(
     undefined,
-    new MeshBasicMaterial({ color: 0xff0000 })
+    new MeshBasicMaterial({ color: 0xff0000 }),
   );
   mesh.castShadow = mesh.receiveShadow = true;
 

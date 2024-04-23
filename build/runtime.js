@@ -1,4 +1,4 @@
-import { Signal } from "./signal.js";
+import { Signal } from './signal.js';
 export class ConnectedNode {
     static getNode(value) {
         if (value instanceof HTMLElement) {
@@ -6,7 +6,7 @@ export class ConnectedNode {
         }
         return new Text(value);
     }
-    #anchor = document.createComment("ConnectedNode anchor");
+    #anchor = document.createComment('ConnectedNode anchor');
     #value = undefined;
     #valueNodes = [];
     constructor(value) {
@@ -83,7 +83,7 @@ export class ContainedNodeArray extends Array {
         return result;
     }
     slice() {
-        throw new Error("unimplemented");
+        throw new Error('unimplemented');
         return [];
     }
     splice(start, deleteCount, ...items) {
@@ -104,17 +104,17 @@ export class ContainedNodeArray extends Array {
         return removedElements;
     }
     unshift() {
-        throw new Error("unimplemented");
+        throw new Error('unimplemented');
         return 0;
     }
     pop() {
-        throw new Error("unimplemented");
+        throw new Error('unimplemented');
     }
 }
 const domParser = new window.DOMParser();
 export const html = (...args) => {
     const { html, hydrations } = render(...args);
-    const document = domParser.parseFromString(html, "text/html");
+    const document = domParser.parseFromString(html, 'text/html');
     hydrate(document.body, hydrations);
     // @ts-expect-error
     return new ContainedNodeArray(...document.body.childNodes);
@@ -127,39 +127,39 @@ export function processPart(part, attribute, hydrations) {
     if (part instanceof Signal) {
         const id = uniqueId();
         if (attribute) {
-            if (attribute.type === "handler") {
-                hydrations.push({ type: "handler", part, id, eventName: attribute.name });
+            if (attribute.type === 'handler') {
+                hydrations.push({ type: 'handler', part, id, eventName: attribute.name });
             }
             else {
                 magicBagOfHolding[id] = part;
-                hydrations.push({ type: "attribute", attribute, part, id });
+                hydrations.push({ type: 'attribute', attribute, part, id });
             }
             return attribute.asValue(id);
         }
         else {
-            hydrations.push({ type: "dom", part, id });
+            hydrations.push({ type: 'dom', part, id });
             return `<data id="${id}"></data>`;
         }
     }
-    else if (part && typeof part === "object" && ALL_ATTRIBUTES in part) {
+    else if (part && typeof part === 'object' && ALL_ATTRIBUTES in part) {
         const id = uniqueId();
-        hydrations.push({ type: "attributemap", part: part, id });
+        hydrations.push({ type: 'attributemap', part: part, id });
         return `data-attribute-map=${id}`;
     }
     else if (part instanceof ContainedNodeArray) {
         const id = uniqueId();
-        hydrations.push({ type: "dom", part, id });
+        hydrations.push({ type: 'dom', part, id });
         return `<data id="${id}"></data>`;
     }
     else if (part instanceof Function) {
         if (attribute) {
             const id = uniqueId();
-            if (attribute?.type === "handler") {
-                hydrations.push({ type: "handler", part: part, id, eventName: attribute.name });
+            if (attribute?.type === 'handler') {
+                hydrations.push({ type: 'handler', part: part, id, eventName: attribute.name });
             }
             else {
                 magicBagOfHolding[id] = part;
-                hydrations.push({ type: "attribute", attribute, part, id });
+                hydrations.push({ type: 'attribute', attribute, part, id });
             }
             return attribute.asValue(id);
         }
@@ -168,35 +168,35 @@ export function processPart(part, attribute, hydrations) {
     else if (part instanceof HTMLElement) {
         const id = uniqueId();
         magicBagOfHolding[id] = part;
-        hydrations.push({ type: "element", part, id });
+        hydrations.push({ type: 'element', part, id });
         return `<data id="${id}"></data>`;
     }
     else if (Array.isArray(part)) {
         if (attribute) {
             const id = uniqueId();
             magicBagOfHolding[id] = part;
-            hydrations.push({ type: "attribute", attribute, part, id });
+            hydrations.push({ type: 'attribute', attribute, part, id });
             return attribute.asValue(id);
         }
         else {
-            return part.map((part) => processPart(part, attribute, hydrations)).join("");
+            return part.map((part) => processPart(part, attribute, hydrations)).join('');
         }
     }
     else if (attribute) {
-        if (typeof part === "boolean" || part === "true" || part === "false" || part == null) {
+        if (typeof part === 'boolean' || part === 'true' || part === 'false' || part == null) {
             const id = uniqueId();
-            hydrations.push({ type: "booleanattribute", attribute, part, id });
+            hydrations.push({ type: 'booleanattribute', attribute, part, id });
             return attribute.asValue(id);
         }
-        else if (typeof part === "object" || Array.isArray(part)) {
+        else if (typeof part === 'object' || Array.isArray(part)) {
             const id = uniqueId();
             magicBagOfHolding[id] = part;
-            hydrations.push({ type: "attribute", attribute, part, id });
+            hydrations.push({ type: 'attribute', attribute, part, id });
             return attribute.asValue(id);
         }
         return attribute.asValue(`${part}`);
     }
-    return typeof part === "string" ? part : `${part}`;
+    return typeof part === 'string' ? part : `${part}`;
 }
 export class ComponentDefinition {
     html;
@@ -207,10 +207,10 @@ export class ComponentDefinition {
     }
 }
 function getAttributeForExpression(prevString) {
-    const isQuoted = prevString.at(-1) === '"' && prevString.at(-2) === "=";
-    if (!isQuoted && prevString.at(-1) !== "=")
+    const isQuoted = prevString.at(-1) === '"' && prevString.at(-2) === '=';
+    if (!isQuoted && prevString.at(-1) !== '=')
         return null;
-    let attribute = "";
+    let attribute = '';
     for (let i = prevString.length - (isQuoted ? 3 : 2); i >= 0; i--) {
         const char = prevString.at(i);
         if (char && char.match(/\S/)) {
@@ -222,11 +222,11 @@ function getAttributeForExpression(prevString) {
     }
     return {
         name: attribute,
-        type: attribute.startsWith("on") ? "handler" : "attribute",
+        type: attribute.startsWith('on') ? 'handler' : 'attribute',
         asValue: (value) => (isQuoted ? value : `"${value}"`),
     };
 }
-export const ALL_ATTRIBUTES = Symbol("all attributes");
+export const ALL_ATTRIBUTES = Symbol('all attributes');
 const definedElements = new Map();
 const liveElements = new Map();
 const magicBagOfHolding = {};
@@ -237,7 +237,7 @@ const collectValue = (id) => {
     delete magicBagOfHolding[id];
     return value;
 };
-const render = (strings = [""], ...rest) => {
+const render = (strings = [''], ...rest) => {
     const hydrations = [];
     const allParts = [...strings];
     for (let i = 0; i < rest.length; i++) {
@@ -245,11 +245,11 @@ const render = (strings = [""], ...rest) => {
         const part = processPart(rest[i], attribute, hydrations);
         allParts.splice(i * 2 + 1, 0, part);
     }
-    const lines = allParts.join("").split(/[\r\n]+/g);
+    const lines = allParts.join('').split(/[\r\n]+/g);
     for (let i = 0; i < lines.length; i++) {
         lines[i] = lines[i].trim();
     }
-    const html = lines.join("\n");
+    const html = lines.join('\n');
     return new ComponentDefinition(html, hydrations);
 };
 export function hydrate(owningElement, hydrations) {
@@ -257,7 +257,7 @@ export function hydrate(owningElement, hydrations) {
     //  this means we're not 100% tied to the IDs
     for (const hydration of hydrations) {
         const { type } = hydration;
-        if (type === "dom") {
+        if (type === 'dom') {
             const { id, part } = hydration;
             const dataNode = owningElement.shadowRoot?.querySelector(`[id="${id}"]`) ?? owningElement.querySelector(`[id="${id}"]`) ?? owningElement;
             if (part instanceof ContainedNodeArray) {
@@ -269,26 +269,26 @@ export function hydrate(owningElement, hydrations) {
                 connectedNode.connect(dataNode, { replace: true });
             }
         }
-        else if (type === "element") {
+        else if (type === 'element') {
             const { id, part } = hydration;
             const dataNode = owningElement.shadowRoot?.querySelector(`[id="${id}"]`) ?? owningElement.querySelector(`[id="${id}"]`) ?? owningElement;
             dataNode.before(part);
             dataNode.remove();
         }
-        else if (type === "attribute") {
+        else if (type === 'attribute') {
             const { id, attribute, part } = hydration;
             const element = owningElement.shadowRoot?.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement;
             const elementTagLower = element.tagName.toLowerCase();
-            if (attribute.name === "style") {
-                element.removeAttribute("style");
+            if (attribute.name === 'style') {
+                element.removeAttribute('style');
                 function applyStyleObject(element, style) {
-                    if (style != null && typeof style === "object") {
+                    if (style != null && typeof style === 'object') {
                         for (const key in style) {
                             element.style[key] = style[key];
                         }
                     }
                     else {
-                        console.error("style attribute must be an object or Signal, received:", style);
+                        console.error('style attribute must be an object or Signal, received:', style);
                     }
                 }
                 if (part instanceof Signal) {
@@ -309,7 +309,7 @@ export function hydrate(owningElement, hydrations) {
                 // we are in charge of managing the attribute value
                 if (part instanceof Signal) {
                     const updateAttribute = () => {
-                        if ((element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLButtonElement) && attribute.name === "value") {
+                        if ((element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLButtonElement) && attribute.name === 'value') {
                             element.value = part.value;
                         }
                         else {
@@ -324,7 +324,7 @@ export function hydrate(owningElement, hydrations) {
                     part.on(updateAttribute);
                     updateAttribute();
                     // if this element could be a custom element, when it's defined we may yield control of the attribute to the component itself
-                    if (elementTagLower.indexOf("-") !== -1) {
+                    if (elementTagLower.indexOf('-') !== -1) {
                         customElements.whenDefined(elementTagLower).then(() => {
                             if (definedElements.has(elementTagLower) === false)
                                 return; // don't swap out if we don't control the element
@@ -336,7 +336,7 @@ export function hydrate(owningElement, hydrations) {
                 else {
                     element.setAttribute(attribute.name, `${part}`);
                     // if this element could be a custom element, when it's defined we may yield control of the attribute to the component itself
-                    if (elementTagLower.indexOf("-") !== -1) {
+                    if (elementTagLower.indexOf('-') !== -1) {
                         customElements.whenDefined(elementTagLower).then(() => {
                             if (definedElements.has(elementTagLower) === false)
                                 return; // don't swap out if we don't control the element
@@ -346,23 +346,23 @@ export function hydrate(owningElement, hydrations) {
                 }
             }
         }
-        else if (type === "booleanattribute") {
+        else if (type === 'booleanattribute') {
             const { id, attribute, part } = hydration;
             const element = owningElement.shadowRoot?.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement.querySelector(`[${attribute.name}="${id}"]`) ?? owningElement;
-            if (!part || part === "false") {
+            if (!part || part === 'false') {
                 element.removeAttribute(attribute.name);
             }
             else {
-                element.setAttribute(attribute.name, "true");
+                element.setAttribute(attribute.name, 'true');
             }
         }
-        else if (type === "attributemap") {
+        else if (type === 'attributemap') {
             // @TODO: garbage collection
             const { part: { [ALL_ATTRIBUTES]: publisher, ...part }, id, } = hydration;
             const updateAttributes = () => {
                 for (const attributeName in part) {
                     const targetElement = owningElement.shadowRoot?.querySelector(`[data-attribute-map="${id}"]`) ?? owningElement.querySelector(`[data-attribute-map="${id}"]`) ?? owningElement;
-                    if (typeof part[attributeName].value === "string") {
+                    if (typeof part[attributeName].value === 'string') {
                         targetElement.setAttribute(attributeName, part[attributeName].value);
                     }
                     else {
@@ -374,9 +374,9 @@ export function hydrate(owningElement, hydrations) {
             updateAttributes();
             publisher.on(() => updateAttributes());
         }
-        else if (type === "handler") {
+        else if (type === 'handler') {
             const { id, eventName, part } = hydration;
-            const listenerEvent = eventName.replace(/^on/, "").toLowerCase();
+            const listenerEvent = eventName.replace(/^on/, '').toLowerCase();
             const targetElement = owningElement.shadowRoot?.querySelector(`[${eventName}="${id}"]`) ?? owningElement.querySelector(`[${eventName}="${id}"]`) ?? owningElement;
             targetElement.removeAttribute(eventName);
             if (part instanceof Signal) {
@@ -411,15 +411,15 @@ export const element = (...args) => {
         html = _html;
         hydrations = _hydrations;
     }
-    const parsingNode = document.createElement("div");
+    const parsingNode = document.createElement('div');
     parsingNode.innerHTML = html;
     const element = parsingNode.firstElementChild;
-    parsingNode.innerHTML = "";
+    parsingNode.innerHTML = '';
     hydrate(element, hydrations);
     return element;
 };
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow#elements_you_can_attach_a_shadow_to
-const tagNamesThatSupportShadowRoot = new Set(["ARTICLE", "ASIDE", "BLOCKQUOTE", "BODY", "DIV", "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "MAIN", "NAV", "P", "SECTION", "SPAN"]);
+const tagNamesThatSupportShadowRoot = new Set(['ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'BODY', 'DIV', 'FOOTER', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'MAIN', 'NAV', 'P', 'SECTION', 'SPAN']);
 const elementToContextMap = new WeakMap();
 const getElementContext = (element) => {
     let elementContext;
@@ -432,13 +432,13 @@ const getElementContext = (element) => {
     }
     return elementContext;
 };
-export const ElementName = Symbol("ElementName");
-export const ElementIs = Symbol("ElementIs");
+export const ElementName = Symbol('ElementName');
+export const ElementIs = Symbol('ElementIs');
 export function registerComponent(name, componentDefinition, options = {}) {
     if (definedElements.has(name)) {
         definedElements.set(name, componentDefinition);
         const elements = Array.from(liveElements.get(name));
-        console.log("updating", name);
+        console.log('updating', name);
         for (let i = 0; i < elements.length; i++) {
             elements[i].initialize();
         }
@@ -485,7 +485,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
         constructor() {
             super();
             for (const attributeName of this.getAttributeNames()) {
-                if (attributeName.startsWith("on"))
+                if (attributeName.startsWith('on'))
                     continue;
                 const attributeValue = this.getAttribute(attributeName);
                 this.#attachAttribute(attributeName, attributeValue);
@@ -494,7 +494,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
             const mutationObserver = new MutationObserver((mutations) => {
                 for (let i = 0; i < mutations.length; i++) {
                     const mutation = mutations[i];
-                    if (mutation.type !== "attributes")
+                    if (mutation.type !== 'attributes')
                         continue;
                     const { attributeName } = mutation;
                     if (attributeName) {
@@ -505,14 +505,14 @@ export function registerComponent(name, componentDefinition, options = {}) {
             });
             mutationObserver.observe(this, { attributes: true, attributeOldValue: true });
             // only autonomous custom elements & a short list of native elements support shadow roots
-            if (tagNamesThatSupportShadowRoot.has(this.tagName) || this.tagName.includes("-")) {
+            if (tagNamesThatSupportShadowRoot.has(this.tagName) || this.tagName.includes('-')) {
                 this.attachShadow({
-                    mode: "open",
+                    mode: 'open',
                 });
             }
             else {
                 // a shadow root, so we need to catch the error and fallback to using the element itself
-                Object.defineProperty(this, "shadowRoot", { value: this });
+                Object.defineProperty(this, 'shadowRoot', { value: this });
             }
             this.#isConstructed = true;
         }
@@ -600,7 +600,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
                     }
                     // bind elements to refs
                     // @TODO: this doesn't catch dom changes, should we use a mutation observer
-                    const elementsWithIds = (this.shadowRoot ?? this).querySelectorAll("[id]");
+                    const elementsWithIds = (this.shadowRoot ?? this).querySelectorAll('[id]');
                     for (let i = 0; i < elementsWithIds.length; i++) {
                         const element = elementsWithIds[i];
                         const id = element.id;
@@ -623,7 +623,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
             }));
         }
     };
-    Object.defineProperty(ComponentClass, "name", { value: name });
+    Object.defineProperty(ComponentClass, 'name', { value: name });
     const elementClass = getElementClass?.(ComponentClass) ?? ComponentClass;
     customElements.define(name, elementClass, elementRegistryOptions);
     return name;

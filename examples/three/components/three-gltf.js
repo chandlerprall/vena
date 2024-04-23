@@ -1,5 +1,5 @@
 import { Quaternion, Vector3 } from 'three';
-import { GLTFLoader } from "../lib/GLTFLoader.js";
+import { GLTFLoader } from '../lib/GLTFLoader.js';
 import { registerComponent } from 'vena';
 import { GraphContext } from '../context.js';
 
@@ -19,7 +19,7 @@ registerComponent('three-gltf', ({ render, attributes, context }) => {
 
       context[GraphContext].add(obj);
       context[GraphContext] = obj;
-    }
+    },
   );
 
   // context[GraphContext] = mesh;

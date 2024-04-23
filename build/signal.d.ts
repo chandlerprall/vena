@@ -22,7 +22,7 @@ export declare class Signal<T = any> {
     toString(): string | undefined;
 }
 export declare function afterUpdates(fn?: () => void): Promise<void>;
-type ProxySignalProperties = "on" | "off" | "map" | "toString" | "value" | "dirty";
+type ProxySignalProperties = 'on' | 'off' | 'map' | 'toString' | 'value' | 'dirty';
 export declare const ProxySignal: {
     new <T extends object>(base: T): Signal<T> & Omit<T, ProxySignalProperties>;
     from<T extends Array<Signal>, O extends object>(transform: (values: FromSignals<T>) => O, ...signals: T): Signal<O> & Omit<O, ProxySignalProperties>;

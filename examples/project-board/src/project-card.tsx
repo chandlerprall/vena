@@ -1,22 +1,22 @@
-import { registerComponent } from "vena";
-import { ProjectBoardContext } from "./project-board.js";
+import { registerComponent } from 'vena';
+import { ProjectBoardContext } from './project-board.js';
 
 declare global {
-	namespace Vena {
-		interface Elements {
-			"project-card": {
-				dragdata: any;
-			};
-		}
-	}
+  namespace Vena {
+    interface Elements {
+      'project-card': {
+        dragdata: any;
+      };
+    }
+  }
 }
 
-export default registerComponent("project-card", ({ render, attributes, refs, context }) => {
-	const { isDragging } = context[ProjectBoardContext];
+export default registerComponent('project-card', ({ render, attributes, refs, context }) => {
+  const { isDragging } = context[ProjectBoardContext];
 
-	render(
-		<>
-			<style>{`
+  render(
+    <>
+      <style>{`
         .card {
           display: block;
           padding: var(--token-spacing-base-unit);
@@ -48,26 +48,26 @@ export default registerComponent("project-card", ({ render, attributes, refs, co
           font-size: var(--token-font-size-down);
         }
       `}</style>
-			<div className="card" draggable id="card">
-				<code>
-					<slot className="content" />
-				</code>
-			</div>
-		</>
-	);
+      <div className="card" draggable id="card">
+        <code>
+          <slot className="content"/>
+        </code>
+      </div>
+    </>,
+  );
 
-	refs.card.addEventListener("dragstart", (e) => {
-		const { dataTransfer } = e as any as DragEvent;
-		if (dataTransfer) {
-			dataTransfer.effectAllowed = "move";
-			dataTransfer.setData("application/json", JSON.stringify(attributes.dragdata.value));
-			setTimeout(() => {
-				isDragging.value = true;
-			});
-		}
-	});
+  refs.card.addEventListener('dragstart', (e) => {
+    const { dataTransfer } = e as any as DragEvent;
+    if (dataTransfer) {
+      dataTransfer.effectAllowed = 'move';
+      dataTransfer.setData('application/json', JSON.stringify(attributes.dragdata.value));
+      setTimeout(() => {
+        isDragging.value = true;
+      });
+    }
+  });
 
-	refs.card.addEventListener("dragend", () => {
-		isDragging.value = false;
-	});
+  refs.card.addEventListener('dragend', () => {
+    isDragging.value = false;
+  });
 });

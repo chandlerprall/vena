@@ -14,7 +14,7 @@ registerComponent('popover-menu', ({ render, attributes, refs }) => {
   };
   const onMenuClick = () => {
     isOpen.value = false;
-  }
+  };
 
   let leavingTimeout;
   const onMouseLeave = () => {
@@ -87,8 +87,8 @@ menu ::slotted(button:active) {
     id="content"
     onClick=${onMenuClick}
     style=${attributes.direction.map(direction => ({
-      [direction === 'up' ? 'bottom' : 'top']: '100%'
-    }))}
+    [direction === 'up' ? 'bottom' : 'top']: '100%',
+  }))}
   >
     <slot name="menu"></slot>
   </menu>

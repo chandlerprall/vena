@@ -1,4 +1,4 @@
-import { Signal } from "./signal.js";
+import { Signal } from './signal.js';
 export declare class ConnectedNode<ValueType = unknown> {
     #private;
     static getNode(value: any): HTMLElement | Text;
@@ -30,25 +30,25 @@ export declare class ComponentDefinition {
 }
 export interface Attribute {
     name: string;
-    type: "handler" | "attribute";
+    type: 'handler' | 'attribute';
     asValue: (value: string) => string;
 }
 export declare const ALL_ATTRIBUTES: unique symbol;
 interface DOMHydration {
-    type: "dom";
+    type: 'dom';
     id: string;
     part: Signal | ContainedNodeArray;
 }
 interface AttributeHydration {
-    type: "attribute";
+    type: 'attribute';
     id: string;
     part: unknown;
     attribute: Attribute;
 }
 interface BooleanAttributeHydration {
-    type: "booleanattribute";
+    type: 'booleanattribute';
     id: string;
-    part: boolean | "true" | "false" | null | undefined;
+    part: boolean | 'true' | 'false' | null | undefined;
     attribute: Attribute;
 }
 type AttributeMapPart = {
@@ -56,24 +56,24 @@ type AttributeMapPart = {
     [key: string]: any;
 };
 interface AttributeMapHydration {
-    type: "attributemap";
+    type: 'attributemap';
     id: string;
     part: AttributeMapPart;
 }
 interface HandlerHydration {
-    type: "handler";
+    type: 'handler';
     id: string;
     part: EventListener | Signal<EventListener | null | undefined>;
     eventName: string;
 }
 interface ElementHydration {
-    type: "element";
+    type: 'element';
     id: string;
     part: HTMLElement;
 }
 export type Hydration = DOMHydration | AttributeHydration | BooleanAttributeHydration | AttributeMapHydration | HandlerHydration | ElementHydration;
 export declare function hydrate(owningElement: HTMLElement, hydrations: Hydration[]): void;
-export declare const element: (args_0: ComponentDefinition | TemplateStringsArray, ...args_1: any[]) => HTMLElement;
+export declare const element: (args_0: TemplateStringsArray | ComponentDefinition, ...args_1: any[]) => HTMLElement;
 declare global {
     namespace Vena {
         interface Context {

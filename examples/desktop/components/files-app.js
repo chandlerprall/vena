@@ -3,7 +3,7 @@ import { openFile } from '../filemanager.js';
 
 registerComponent('files-app', ({ render, element, attributes }) => {
 
-render`
+  render`
 <style>
 file-explorer {
 	height: 100%;

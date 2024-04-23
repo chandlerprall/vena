@@ -1,5 +1,5 @@
 import { registerComponent, element, Signal } from 'vena';
-import { windows, taskbarButtons, launchWindow } from '../windowmanager.js'
+import { windows, taskbarButtons, launchWindow } from '../windowmanager.js';
 import { modals as fileModals, openFile } from '../filemanager.js';
 
 registerComponent('desktop-app', ({ render }) => {
@@ -72,9 +72,9 @@ file-explorer {
 		initialpath="/desktop"
 		onfile-explorer-dblclick-file=${({ detail: file }) => openFile(file)}
 		onfile-explorer-dblclick-directory=${(e) => {
-      e.preventDefault();
-      launchFiles(e.detail.path);
-    }}
+    e.preventDefault();
+    launchFiles(e.detail.path);
+  }}
 	></file-explorer>
 	<section id="windows">${windows}</section>
 	<desktop-taskbar id="taskbar">
@@ -102,6 +102,7 @@ export function launchCalculator() {
 		</desktop-window>
 	`, { width: 'auto' });
 }
+
 export function launchNotepad(file) {
   launchWindow(element`
 		<desktop-window>

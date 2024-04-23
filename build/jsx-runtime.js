@@ -1,5 +1,5 @@
-import { ComponentDefinition, processPart, ElementName, ElementIs } from "./runtime.js";
-export const Fragment = Symbol("Fragment");
+import { ComponentDefinition, processPart, ElementName, ElementIs } from './runtime.js';
+export const Fragment = Symbol('Fragment');
 export function jsx(tagName, { children, ...attributes }) {
     const childs = (children = Array.isArray(children) ? children : [children]);
     const hydrations = [];
@@ -8,25 +8,25 @@ export function jsx(tagName, { children, ...attributes }) {
     for (let i = 0; i < attributeKeys.length; i++) {
         let name = attributeKeys[i];
         const value = attributes[name];
-        if (name === "className") {
-            name = "class";
+        if (name === 'className') {
+            name = 'class';
         }
-        else if (name === "htmlFor") {
-            name = "for";
+        else if (name === 'htmlFor') {
+            name = 'for';
         }
         const attribute = {
             name,
-            type: name.startsWith("on") ? "handler" : "attribute",
+            type: name.startsWith('on') ? 'handler' : 'attribute',
             asValue: (value) => `"${value}"`,
         };
         const part = processPart(value, attribute, hydrations);
         parts.push(`${name}=${part}`);
     }
-    let startTag = "";
-    let endTag = "";
+    let startTag = '';
+    let endTag = '';
     if (tagName === Fragment) {
-        startTag = "";
-        endTag = "";
+        startTag = '';
+        endTag = '';
     }
     else {
         const tagElement = customElements.get(tagName);
@@ -37,7 +37,7 @@ export function jsx(tagName, { children, ...attributes }) {
                 tagName = `${tagName} is="${elementIs}"`; // 🤫
             }
         }
-        startTag = `<${tagName} ${parts.join(" ")}>`;
+        startTag = `<${tagName} ${parts.join(' ')}>`;
         endTag = `</${tagName}>`;
     }
     return new ComponentDefinition(`${startTag}${childs
@@ -51,7 +51,7 @@ export function jsx(tagName, { children, ...attributes }) {
             return processPart(child, null, hydrations);
         }
     })
-        .join("")}${endTag}`, hydrations);
+        .join('')}${endTag}`, hydrations);
 }
 export function jsxs(tagName, attributes) {
     return jsx(tagName, attributes);

@@ -1,5 +1,5 @@
-const SignalSource = Symbol("SignalSource");
-const SignalArray = Symbol("SignalArray");
+const SignalSource = Symbol('SignalSource');
+const SignalArray = Symbol('SignalArray');
 function isSignalArray(value) {
     return Array.isArray(value) && SignalArray in value;
 }
@@ -116,7 +116,7 @@ export class Signal {
             }
         }
         if (this.#isPropagating) {
-            console.warn("Signal loop detected in signal", this);
+            console.warn('Signal loop detected in signal', this);
         }
         if (!this.#propagation) {
             queueMicrotask(() => this.#propagation?.());
@@ -162,22 +162,22 @@ class _ProxySignal extends Signal {
         // @ts-expect-error
         return new Proxy(base, {
             get(target, prop, receiver) {
-                if (prop === "on" || prop === "off" || prop === "map" || prop === "toString") {
+                if (prop === 'on' || prop === 'off' || prop === 'map' || prop === 'toString') {
                     return _this.#signal[prop].bind(_this.#signal);
                 }
-                else if (prop === "value" || prop === "dirty") {
+                else if (prop === 'value' || prop === 'dirty') {
                     return _this.#signal[prop];
                 }
                 _this.#queueUpdate();
                 const value = _this.#signal.value[prop];
                 // const value = target[prop as keyof typeof target];
-                if (typeof value === "function") {
+                if (typeof value === 'function') {
                     return value.bind(_this.#signal.value);
                 }
                 return value;
             },
             set(target, prop, value, receiver) {
-                if (prop === "value" || prop === "dirty") {
+                if (prop === 'value' || prop === 'dirty') {
                     // @ts-expect-error
                     _this.#signal[prop] = value;
                     return true;

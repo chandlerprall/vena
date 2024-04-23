@@ -241,9 +241,10 @@ it('updates without getting stuck in a loop', async () => {
 
 it('does not break propagation rules', async () => {
   const signal = new Signal(0);
-  const listener = fn(() => { });
+  const listener = fn(() => {
+  });
 
-  signal.on(listener)
+  signal.on(listener);
   signal.value = 1;
   signal.on(listener);
 
@@ -271,7 +272,8 @@ function it(name, test) {
   }
 }
 
-function fn(callback = () => { }) {
+function fn(callback = () => {
+}) {
   const func = (...values) => {
     func.calls.push(values);
     callback(...values);

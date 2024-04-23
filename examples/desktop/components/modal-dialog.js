@@ -1,7 +1,7 @@
 import { registerComponent } from 'vena';
 
 registerComponent('modal-dialog', ({ render, element }) => {
-	render`
+  render`
 <style>
 :host {
 	position: absolute;

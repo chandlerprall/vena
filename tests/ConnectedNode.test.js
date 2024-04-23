@@ -1,5 +1,6 @@
 import jsdom from 'jsdom-global';
 import { expect } from 'chai';
+
 jsdom(undefined, { url: 'http://localhost' });
 
 async function insertion() {
@@ -375,5 +376,5 @@ function it(name, test) {
 Object.defineProperty(HTMLElement.prototype, 'childNodesWithoutComments', {
   get() {
     return Array.from(this.childNodes).filter(node => node.nodeType !== Node.COMMENT_NODE);
-  }
+  },
 });

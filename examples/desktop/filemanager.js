@@ -61,6 +61,7 @@ class Directory {
     }
   }
 }
+
 const root = new Directory('');
 root.addFile(new File('ipsum.txt', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'));
 
@@ -74,10 +75,10 @@ fetch('./README.md').then(r => r.text()).then(content => {
 });
 
 const desktopApps = desktop.addDirectory(new Directory('Apps'));
-desktopApps.addFile(new File("Calculator.app", null, '🧮'));
-desktopApps.addFile(new File("Notepad.app", null, '📝'));
-desktopApps.addFile(new File("Files.app", null, '🗂️'));
-desktopApps.addFile(new File("Settings.app", null, '⚙️'));
+desktopApps.addFile(new File('Calculator.app', null, '🧮'));
+desktopApps.addFile(new File('Notepad.app', null, '📝'));
+desktopApps.addFile(new File('Files.app', null, '🗂️'));
+desktopApps.addFile(new File('Settings.app', null, '⚙️'));
 
 export const modals = html();
 
@@ -87,7 +88,7 @@ export const openFileDialog = ({ filter }) => {
       const dialogIdx = modals.indexOf(dialog);
       modals.splice(dialogIdx, 1);
       resolve(result);
-    }
+    };
 
     const selectedFile = new Signal(null);
 
@@ -124,7 +125,7 @@ export const openSaveDialog = () => {
       const dialogIdx = modals.indexOf(dialog);
       modals.splice(dialogIdx, 1);
       resolve(result);
-    }
+    };
 
     const filename = new Signal('');
 
@@ -132,10 +133,10 @@ export const openSaveDialog = () => {
 			<modal-dialog
         style=${{ width: '300px' }}
         onfile-explorer-select-file=${({ detail: file }) => {
-          if (file) {
-            filename.value = file.name
-          }
-        }}
+      if (file) {
+        filename.value = file.name;
+      }
+    }}
       >
 				<style>
 					.filemanager-fileexplorer {
@@ -155,14 +156,14 @@ export const openSaveDialog = () => {
 					placeholder="filename"
 					value=${filename}
 					onkeyup=${e => {
-        filename.value = e.target.value;
-      }}
+      filename.value = e.target.value;
+    }}
 				/>
 				
 				<button slot="buttons" onclick=${() => closeDialog(null)}>Cancel</button>
 				<button slot="buttons" disabled=${filename.map(filename => !filename)} onclick=${() => {
-        closeDialog(`${dialog.querySelector('file-explorer').liveView.path}/${filename.value}`);
-      }}>Save</button>
+      closeDialog(`${dialog.querySelector('file-explorer').liveView.path}/${filename.value}`);
+    }}>Save</button>
 			</modal-dialog>
 		`;
     modals.push(dialog);

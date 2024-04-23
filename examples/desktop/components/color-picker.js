@@ -126,7 +126,7 @@ registerComponent('color-picker', ({ render, attributes, element }) => {
     <div
       id="colorResult"
       style=${Signal.from(hue, saturation, lightness).map(([hue, saturation, lightness]) =>
-    ({ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` })
+    ({ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` }),
   )}
     ></div>
   </section>
@@ -139,13 +139,13 @@ function hexToHSL(H) {
   // Convert hex to RGB first
   let r = 0, g = 0, b = 0;
   if (H.length == 4) {
-    r = "0x" + H[1] + H[1];
-    g = "0x" + H[2] + H[2];
-    b = "0x" + H[3] + H[3];
+    r = '0x' + H[1] + H[1];
+    g = '0x' + H[2] + H[2];
+    b = '0x' + H[3] + H[3];
   } else if (H.length == 7) {
-    r = "0x" + H[1] + H[2];
-    g = "0x" + H[3] + H[4];
-    b = "0x" + H[5] + H[6];
+    r = '0x' + H[1] + H[2];
+    g = '0x' + H[3] + H[4];
+    b = '0x' + H[5] + H[6];
   }
   // Then to HSL
   r /= 255;
@@ -192,17 +192,29 @@ function HSLToHex(h, s, l) {
     b = 0;
 
   if (0 <= h && h < 60) {
-    r = c; g = x; b = 0;
+    r = c;
+    g = x;
+    b = 0;
   } else if (60 <= h && h < 120) {
-    r = x; g = c; b = 0;
+    r = x;
+    g = c;
+    b = 0;
   } else if (120 <= h && h < 180) {
-    r = 0; g = c; b = x;
+    r = 0;
+    g = c;
+    b = x;
   } else if (180 <= h && h < 240) {
-    r = 0; g = x; b = c;
+    r = 0;
+    g = x;
+    b = c;
   } else if (240 <= h && h < 300) {
-    r = x; g = 0; b = c;
+    r = x;
+    g = 0;
+    b = c;
   } else if (300 <= h && h < 360) {
-    r = c; g = 0; b = x;
+    r = c;
+    g = 0;
+    b = x;
   }
   // Having obtained RGB, convert channels to hex
   r = Math.round((r + m) * 255).toString(16);
@@ -211,11 +223,11 @@ function HSLToHex(h, s, l) {
 
   // Prepend 0s, if necessary
   if (r.length == 1)
-    r = "0" + r;
+    r = '0' + r;
   if (g.length == 1)
-    g = "0" + g;
+    g = '0' + g;
   if (b.length == 1)
-    b = "0" + b;
+    b = '0' + b;
 
-  return "#" + r + g + b;
+  return '#' + r + g + b;
 }

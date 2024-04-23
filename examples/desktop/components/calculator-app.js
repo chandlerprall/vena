@@ -12,14 +12,15 @@ registerComponent('calculator-app', ({ element, render, state }) => {
     if (equation.value && input.value) {
       try {
         nextAnswer = eval(`${equation.value} ${input.value}`);
-      } catch (e) { }
+      } catch (e) {
+      }
     }
     answer.value = nextAnswer;
   };
   input.on(updateAnswer);
   equation.on(updateAnswer);
 
-  element.addEventListener("calculator-app-digit", ({ detail: digit }) => {
+  element.addEventListener('calculator-app-digit', ({ detail: digit }) => {
     if (input.value.match(/^0((?!\.)|$)/)) {
       input.value = digit;
     } else {
@@ -27,13 +28,13 @@ registerComponent('calculator-app', ({ element, render, state }) => {
     }
   });
 
-  element.addEventListener("calculator-app-dot", () => {
-    if (input.value.indexOf(".") === -1) {
-      input.value += ".";
+  element.addEventListener('calculator-app-dot', () => {
+    if (input.value.indexOf('.') === -1) {
+      input.value += '.';
     }
   });
 
-  element.addEventListener("calculator-app-operator", ({ detail: operator }) => {
+  element.addEventListener('calculator-app-operator', ({ detail: operator }) => {
     if (input.value === '' || input.value === '0') return;
 
     const nextPart = `${input.value} ${operator}`;
@@ -41,7 +42,7 @@ registerComponent('calculator-app', ({ element, render, state }) => {
     input.value = '';
   });
 
-  element.addEventListener("calculator-app-back", () => {
+  element.addEventListener('calculator-app-back', () => {
     if (input.value) {
       input.value = input.value.slice(0, -1);
       if (input.value.length === 0) {
@@ -121,18 +122,18 @@ button {
 
   <div class="digits">
     ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(
-    (digit) => createElement`<button onClick=${() => element.emit("digit", digit.toString())}>${digit}</button>`
+    (digit) => createElement`<button onClick=${() => element.emit('digit', digit.toString())}>${digit}</button>`,
   )
-    }
-    <button onClick=${() => element.emit("dot")}>.</button>
-    <button onClick=${() => element.emit("back")}>🔙</button>
+  }
+    <button onClick=${() => element.emit('dot')}>.</button>
+    <button onClick=${() => element.emit('back')}>🔙</button>
   </div>
 
   <div class="operations">
-    <button onClick=${() => element.emit("operator", "+")}>+</button>
-    <button onClick=${() => element.emit("operator", "-")}>-</button>
-    <button onClick=${() => element.emit("operator", "*")}>*</button>
-    <button onClick=${() => element.emit("operator", "/")}>/</button>
+    <button onClick=${() => element.emit('operator', '+')}>+</button>
+    <button onClick=${() => element.emit('operator', '-')}>-</button>
+    <button onClick=${() => element.emit('operator', '*')}>*</button>
+    <button onClick=${() => element.emit('operator', '/')}>/</button>
   </div>
 </section>
 	`;

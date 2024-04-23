@@ -48,26 +48,26 @@ menu-bar {
 		
 		<button slot="menu" onClick=${() => refs.content.value = ''}>New</button>
 		<button slot="menu" onClick=${async () => {
-      const file = await openFileDialog({ filter: ['.txt', '.md'] });
-      if (file) {
-        refs.content.value = file.content;
-        updateTitle(file.path);
-      }
-    }}>Open</button>
+    const file = await openFileDialog({ filter: ['.txt', '.md'] });
+    if (file) {
+      refs.content.value = file.content;
+      updateTitle(file.path);
+    }
+  }}>Open</button>
 		<button slot="menu" onClick=${() => {
-      openSaveDialog().then(filepath => {
-        if (filepath) {
-          const hasAcceptableExtension = ['.txt', '.md'].some(ext => filepath.endsWith(ext));
-          const finalFilepath = hasAcceptableExtension ? filepath : `${filepath}.txt`;
-          writeFile(finalFilepath, refs.content.value);
-          updateTitle(finalFilepath);
-        }
-      })
-    }}>Save</button>
+    openSaveDialog().then(filepath => {
+      if (filepath) {
+        const hasAcceptableExtension = ['.txt', '.md'].some(ext => filepath.endsWith(ext));
+        const finalFilepath = hasAcceptableExtension ? filepath : `${filepath}.txt`;
+        writeFile(finalFilepath, refs.content.value);
+        updateTitle(finalFilepath);
+      }
+    });
+  }}>Save</button>
 	</popover-menu>
 </menu-bar>
 <textarea id="content"></textarea>`;
 
   refs.content.value = attributes.file.value?.content || '';
-  refs.content.focus()
+  refs.content.focus();
 });

@@ -9,12 +9,12 @@ registerComponent('desktop-window', ({ element, render, context }) => {
     lastCursorPosition.y = clientY;
     window.addEventListener('mousemove', onWindowMouseMove);
     window.addEventListener('mouseup', onWindowMouseUp);
-  }
+  };
   const onWindowMouseUp = (e) => {
     onWindowMouseMove(e);
     window.removeEventListener('mousemove', onWindowMouseMove, { capture: false });
     window.removeEventListener('mouseup', onWindowMouseUp);
-  }
+  };
   const onWindowMouseMove = ({ clientX, clientY }) => {
     const deltaX = clientX - lastCursorPosition.x;
     const deltaY = clientY - lastCursorPosition.y;
@@ -22,7 +22,7 @@ registerComponent('desktop-window', ({ element, render, context }) => {
     element.style.top = `${element.offsetTop + deltaY}px`;
     lastCursorPosition.x = clientX;
     lastCursorPosition.y = clientY;
-  }
+  };
 
   element.addEventListener('mousedown', () => element.focus());
 
@@ -93,5 +93,5 @@ dialog {
     close() {
       this.emit('close');
     }
-  }
+  },
 });

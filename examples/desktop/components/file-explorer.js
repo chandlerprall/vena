@@ -27,11 +27,11 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
 				<button
 				  class="item directory"
           onDblclick=${() => {
-            const result = me.emit('dblclick-directory', directory);
-            if (result) {
-              liveView.navigate(`${liveView.path}/${directory.name}`)
-            }
-          }}
+        const result = me.emit('dblclick-directory', directory);
+        if (result) {
+          liveView.navigate(`${liveView.path}/${directory.name}`);
+        }
+      }}
         >
 					<span class="icon">📁</span>
 					<span class="name">${directory.name}</span>
@@ -60,9 +60,9 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
 					class="item file"
 					disabled=${!matchesFilters}
 					onClick=${(e) => {
-            e.stopImmediatePropagation();
-            me.emit('select-file', file)
-          }}
+        e.stopImmediatePropagation();
+        me.emit('select-file', file);
+      }}
 					onDblclick=${() => me.emit('dblclick-file', file)}
 				>
 					<span class="icon">${file.icon}</span>
@@ -209,5 +209,5 @@ registerComponent('file-explorer', ({ render, element: me, attributes }) => {
     disconnectedCallback() {
       this.liveView.close();
     }
-  }
+  },
 });

@@ -1,7 +1,25 @@
-import { BoxGeometry, CapsuleGeometry, ConeGeometry, CylinderGeometry, DodecahedronGeometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, SphereGeometry, TetrahedronGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry } from 'three';
+import {
+  BoxGeometry,
+  CapsuleGeometry,
+  ConeGeometry,
+  CylinderGeometry,
+  DodecahedronGeometry,
+  IcosahedronGeometry,
+  LatheGeometry,
+  OctahedronGeometry,
+  PlaneGeometry,
+  PolyhedronGeometry,
+  RingGeometry,
+  SphereGeometry,
+  TetrahedronGeometry,
+  TorusGeometry,
+  TorusKnotGeometry,
+  TubeGeometry,
+} from 'three';
 import { registerComponent, ALL_ATTRIBUTES } from 'vena';
 import { GraphContext } from './context.js';
 import { applyValue } from './utils.js';
+
 [
   { name: 'three-geometry-box', constructor: BoxGeometry },
   { name: 'three-geometry-capsule', constructor: CapsuleGeometry },
