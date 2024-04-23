@@ -545,13 +545,13 @@ export function registerComponent(name, componentDefinition, options = {}) {
             }
             const context = new Proxy({}, {
                 get(target, key) {
-                    let currentElement = element.parentElement;
+                    let currentElement = element.parentNode;
                     while (currentElement) {
                         const elementContext = getElementContext(currentElement);
                         if (elementContext[key] !== undefined) {
                             return elementContext[key];
                         }
-                        currentElement = currentElement.parentElement;
+                        currentElement = currentElement instanceof ShadowRoot ? currentElement.host : currentElement.parentNode;
                     }
                 },
                 set(target, key, value) {
@@ -612,6 +612,7 @@ export function registerComponent(name, componentDefinition, options = {}) {
                 context,
                 // @ts-expect-error
                 state,
+                emit: this.emit.bind(this),
             });
         }
         emit(eventName, detail) {

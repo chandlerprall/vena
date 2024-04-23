@@ -96,6 +96,7 @@ type ComponentDefinitionFn<T extends keyof Vena.Elements> = (options: {
         [key in keyof Vena.Context]: Vena.Context[key];
     };
     state: ComponentState;
+    emit: (eventName: string, detail: unknown) => boolean;
 }) => void;
 interface ComponentDefinitionOptions {
     getBaseClass?: () => typeof HTMLElement;

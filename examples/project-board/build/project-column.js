@@ -1,11 +1,11 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "vena/jsx-runtime";
-import { registerComponent, element, afterUpdates } from 'vena';
+import { registerComponent } from 'vena';
 import { ProjectBoardContext } from './project-board.js';
-registerComponent('project-column-dropzone', ({ render, attributes }) => {
+registerComponent('project-column-dropzone', ({ render, context, emit }) => {
+    const { isDragging } = context[ProjectBoardContext];
     render `
   <style>
   :host {
-    width: 100%;
     width: calc(100% - var(--token-spacing-base-unit, 8px) * 2);
     align-self: center;
   }
@@ -29,12 +29,12 @@ registerComponent('project-column-dropzone', ({ render, attributes }) => {
 
   div.isdragging {
     border-width: 5px;
-    height: 15px;
+    height: 25px;
   }
   </style>
 
   <div
-    class=${attributes.expanded.map((expanded) => (expanded ? 'isdragging' : undefined))}
+    class=${isDragging.map((isDragging) => (isDragging ? 'isdragging' : undefined))}
     ondragenter=${(e) => {
         if (e.dataTransfer) {
             e.preventDefault();
@@ -51,43 +51,18 @@ registerComponent('project-column-dropzone', ({ render, attributes }) => {
         if (e.dataTransfer) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
-            console.log(e.dataTransfer.getData('application/json'));
+            try {
+                const data = JSON.parse(e.dataTransfer.getData('application/json'));
+                emit('card-drop', data);
+            }
+            catch (e) { }
         }
     }}
-  >Drop here</div>
+  >move here</div>
   `;
 });
-export default registerComponent('project-column', ({ render, context, refs }) => {
-    const { isDragging } = context[ProjectBoardContext];
-    function clearDropZones() {
-        const dropZones = refs.cards.assignedElements().filter((x) => x.tagName === 'PROJECT-COLUMN-DROPZONE');
-        for (const dropZone of dropZones) {
-            dropZone.remove();
-        }
-    }
-    function updateDropZones() {
-        clearDropZones();
-        const cards = refs.cards.assignedElements();
-        if (cards.length) {
-            const dropZone = element `<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-            cards[0].insertAdjacentElement('beforebegin', dropZone);
-        }
-        for (const card of cards) {
-            const dropZone = element `<project-column-dropzone expanded=${isDragging} slot="card">test</project-column-dropzone>`;
-            card.insertAdjacentElement('afterend', dropZone);
-        }
-    }
-    isDragging.on((isDragging) => {
-        if (isDragging) {
-        }
-        else {
-        }
-    });
-    afterUpdates(() => {
-        updateDropZones();
-    });
+export default registerComponent('project-column', ({ render }) => {
     render(_jsxs(_Fragment, { children: [_jsx("style", { children: `
-
         :host {
           --project-column-padding: calc(var(--token-spacing-base-unit, 8px) * 0.5);
 
@@ -128,6 +103,6 @@ export default registerComponent('project-column', ({ render, context, refs }) =
           border-top-left-radius: calc(var(--token-spacing-base-unit, 8px) * 1);
           border-top-right-radius: calc(var(--token-spacing-base-unit, 8px) * 1);
         }
-      ` }), _jsx("slot", { name: "title" }), _jsx("slot", { id: "cards", className: "cards", name: "card", children: _jsx("project-column-dropzone", { expanded: isDragging, children: "test" }) })] }));
+      ` }), _jsx("slot", { name: "title" }), _jsx("slot", { className: "cards", name: "card" })] }));
 });
 //# sourceMappingURL=project-column.js.map

@@ -47,8 +47,22 @@ export default registerComponent('project-card', ({ render, attributes, refs, co
         .content {
           font-size: var(--token-font-size-down);
         }
+        
+        ::slotted(*) {
+          margin: 0;
+        }
       `}</style>
-      <div className="card" draggable id="card">
+      <div
+        id="card"
+        className="card"
+        draggable
+        ondragstart={e => {
+          (e.target as HTMLElement).classList.add('dragging');
+        }}
+        ondragend={e => {
+          (e.target as HTMLElement).classList.remove('dragging');
+        }}
+      >
         <code>
           <slot className="content"/>
         </code>

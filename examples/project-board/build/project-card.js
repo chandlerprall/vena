@@ -34,7 +34,15 @@ export default registerComponent('project-card', ({ render, attributes, refs, co
         .content {
           font-size: var(--token-font-size-down);
         }
-      ` }), _jsx("div", { className: "card", draggable: true, id: "card", children: _jsx("code", { children: _jsx("slot", { className: "content" }) }) })] }));
+        
+        ::slotted(*) {
+          margin: 0;
+        }
+      ` }), _jsx("div", { id: "card", className: "card", draggable: true, ondragstart: e => {
+                    e.target.classList.add('dragging');
+                }, ondragend: e => {
+                    e.target.classList.remove('dragging');
+                }, children: _jsx("code", { children: _jsx("slot", { className: "content" }) }) })] }));
     refs.card.addEventListener('dragstart', (e) => {
         const { dataTransfer } = e;
         if (dataTransfer) {

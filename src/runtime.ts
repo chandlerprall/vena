@@ -521,6 +521,7 @@ type ComponentDefinitionFn<T extends keyof Vena.Elements> = (options: {
   attributes: { [key in keyof Vena.Elements[T]]: Signal<Vena.Elements[T]> };
   context: { [key in keyof Vena.Context]: Vena.Context[key] };
   state: ComponentState;
+  emit: (eventName: string, detail: unknown) => boolean;
 }) => void;
 
 interface ComponentDefinitionOptions {
@@ -664,13 +665,13 @@ export function registerComponent<T extends keyof Vena.Elements>(name: T, compon
         {},
         {
           get(target, key) {
-            let currentElement = element.parentElement;
+            let currentElement = element.parentNode;
             while (currentElement) {
-              const elementContext = getElementContext(currentElement);
+              const elementContext = getElementContext(currentElement as any as HTMLElement);
               if (elementContext[key] !== undefined) {
                 return elementContext[key];
               }
-              currentElement = currentElement.parentElement;
+              currentElement = currentElement instanceof ShadowRoot ? currentElement.host : currentElement.parentNode;
             }
           },
 
@@ -736,6 +737,7 @@ export function registerComponent<T extends keyof Vena.Elements>(name: T, compon
         context,
         // @ts-expect-error
         state,
+        emit: this.emit.bind(this),
       });
     }
 

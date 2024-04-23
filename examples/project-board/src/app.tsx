@@ -1,5 +1,5 @@
 import 'vena/live';
-import { element, Signal, ProxySignal } from 'vena';
+import { element, ProxySignal } from 'vena';
 // @ts-expect-error
 import { marked } from 'https://esm.run/marked@12.0.2';
 import ProjectBoard, { Card } from './project-board.js';
@@ -10,7 +10,7 @@ const bucketNames = new ProxySignal(['backlog', 'in-progress', 'complete'] as co
 type BucketName = (typeof bucketNames)[number];
 
 const cards = new ProxySignal(new Set<Card>());
-const cardToBucketMap = new Signal(new Map<Card, BucketName>());
+const cardToBucketMap = new ProxySignal(new Map<Card, BucketName>());
 
 const unsortedBucket = Symbol('unsorted');
 const bucketToCardsMap = ProxySignal.from(
@@ -38,10 +38,10 @@ const bucketToCardsMap = ProxySignal.from(
   cardToBucketMap,
 );
 
-function bucketCard(card: Card, bucket: BucketName) {
+function bucketCard(card: Card, bucket?: BucketName) {
+  cardToBucketMap.delete(card);
   if (bucket) {
-    cardToBucketMap.value.set(card, bucket);
-    cardToBucketMap.value = cardToBucketMap.value;
+    cardToBucketMap.set(card, bucket);
   }
 }
 
@@ -58,13 +58,21 @@ bucketCard(addCard({ id: '4', body: 'Test _four_' }), 'in-progress');
 
 bucketCard(addCard({ id: '5', body: 'Test _five_' }), 'complete');
 
-// addCard({ id: "6", body: "Test _six_" });
-// addCard({ id: "7", body: "Test _seven_" });
+function handleCardDrop(e: CustomEvent) {
+  const cardId = e.detail.id;
+  const bucketName = (e.currentTarget as HTMLElement).getAttribute('data-bucket') ?? undefined;
+
+  const card = Array.from(cards).find((card) => card.id === cardId);
+
+  if (card) {
+    bucketCard(card, bucketName as BucketName);
+  }
+}
 
 document.body.append(
   element(
     <ProjectBoard>
-      <ProjectColumn slot="column">
+      <ProjectColumn onproject-column-dropzone-card-drop={handleCardDrop} slot="column">
         <span slot="title">unsorted</span>
         {bucketToCardsMap.map((bucketToCardsMap) => {
           const cards = bucketToCardsMap.get(unsortedBucket);
@@ -76,11 +84,12 @@ document.body.append(
             );
           });
         })}
+        <project-column-dropzone slot="card"/>
       </ProjectColumn>
       {bucketNames.map((bucketNames) =>
         bucketNames.map((bucketName) =>
           element(
-            <ProjectColumn slot="column">
+            <ProjectColumn data-bucket={bucketName} onproject-column-dropzone-card-drop={handleCardDrop} slot="column">
               <span slot="title">{bucketName}</span>
               {bucketToCardsMap.map((bucketToCardsMap) => {
                 const cards = bucketToCardsMap.get(bucketName);
@@ -92,6 +101,7 @@ document.body.append(
                   );
                 });
               })}
+              <project-column-dropzone slot="card"/>
             </ProjectColumn>,
           ),
         ),
@@ -108,6 +118,7 @@ document.body.append(
       onsubmit={(e) => {
         const form = e.target as HTMLFormElement;
         const cardData = Object.fromEntries(new FormData(form).entries()) as any as Card;
+        cardData.id = (cards.size + 1).toString();
         form.reset();
         addCard(cardData);
       }}
