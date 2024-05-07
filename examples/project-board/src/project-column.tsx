@@ -1,4 +1,4 @@
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 import { ProjectBoardContext } from './project-board.js';
 
 declare global {

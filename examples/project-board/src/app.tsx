@@ -1,5 +1,5 @@
-import 'vena/live';
-import { element, ProxySignal } from 'vena';
+import '@venajs/live';
+import { element, ProxySignal } from '@venajs/core';
 // @ts-expect-error
 import { marked } from 'https://esm.run/marked@12.0.2';
 import ProjectBoard, { Card } from './project-board.js';

@@ -1,6 +1,6 @@
-import { jsx as _jsx, jsxs as _jsxs } from "vena/jsx-runtime";
-import 'vena/live';
-import { element, ProxySignal } from 'vena';
+import { jsx as _jsx, jsxs as _jsxs } from "@venajs/jsx-runtime";
+import '@venajs/live';
+import { element, ProxySignal } from '@venajs/core';
 // @ts-expect-error
 import { marked } from 'https://esm.run/marked@12.0.2';
 import ProjectBoard from './project-board.js';

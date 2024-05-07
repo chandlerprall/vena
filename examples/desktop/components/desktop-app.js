@@ -1,4 +1,4 @@
-import { registerComponent, element, Signal } from 'vena';
+import { registerComponent, element, Signal } from '@venajs/core';
 import { windows, taskbarButtons, launchWindow } from '../windowmanager.js';
 import { modals as fileModals, openFile } from '../filemanager.js';
 

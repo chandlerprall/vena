@@ -1,5 +1,5 @@
 {
-  "name": "project-board",
+  "name": "desktop",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -12,8 +12,5 @@
   "dependencies": {
     "@venajs/core": "^1.0.2-alpha",
     "@venajs/jsx-runtime": "^1.0.1-alpha"
-  },
-  "devDependencies": {
-    "typescript": "^5.4.3"
   }
 }

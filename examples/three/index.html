@@ -17,15 +17,15 @@
   <script type="importmap">{
     "imports": {
       "three": "https://esm.run/three@0.163.0",
-      "vena": "../../build/index.js",
-      "vena/live": "../../build/live.js"
+      "@venajs/core": "https://esm.run/@venajs/core@1.0.2-alpha",
+      "@venajs/live": "../../packages/core/build/live.js"
     }
   }</script>
   <script type="module" src="app.js"></script>
   <script type="module">
     import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
-    import { Signal, element } from 'vena';
-    import 'vena/live';
+    import { Signal, element } from '@venajs/core';
+    import '@venajs/live';
 
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 5, 10);

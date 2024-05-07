@@ -1,4 +1,4 @@
-import 'vena/live';
+import '@venajs/live';
 
 
 import './components/desktop-app.js';

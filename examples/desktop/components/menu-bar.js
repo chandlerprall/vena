@@ -1,4 +1,4 @@
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 
 registerComponent('menu-bar', ({ render }) => {
 

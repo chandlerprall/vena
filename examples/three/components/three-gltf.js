@@ -1,6 +1,6 @@
 import { Quaternion, Vector3 } from 'three';
 import { GLTFLoader } from '../lib/GLTFLoader.js';
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 import { GraphContext } from '../context.js';
 
 const loader = new GLTFLoader();

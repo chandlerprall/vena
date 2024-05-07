@@ -1,5 +1,5 @@
 import { Mesh, Quaternion, Vector3, MeshBasicMaterial } from 'three';
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 import { GraphContext } from '../context.js';
 
 registerComponent('three-mesh', ({ render, attributes, context }) => {

@@ -1,4 +1,4 @@
-import { html, element } from 'vena';
+import { html, element } from '@venajs/core';
 
 export const windows = html();
 export const taskbarButtons = html();

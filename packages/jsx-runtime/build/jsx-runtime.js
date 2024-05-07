@@ -1,4 +1,4 @@
-import { ComponentDefinition, processPart, ElementName, ElementIs } from './runtime.js';
+import { ComponentDefinition, processPart, ElementName, ElementIs } from '@venajs/core';
 export const Fragment = Symbol('Fragment');
 export function jsx(tagName, { children, ...attributes }) {
     const childs = (children = Array.isArray(children) ? children : [children]);

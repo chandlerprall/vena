@@ -1,4 +1,4 @@
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 import { openFile } from '../filemanager.js';
 
 registerComponent('files-app', ({ render, element, attributes }) => {

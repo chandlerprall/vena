@@ -1,0 +1,22 @@
+{
+  "name": "@venajs/jsx-runtime",
+  "version": "1.0.1-alpha",
+  "description": "JSX runtime for Vena",
+  "author": "chandler.prall@gmail.com",
+  "license": "OSL-3.0",
+  "type": "module",
+  "main": "build/jsx-runtime.js",
+  "types": "build/jsx-runtime.d.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@venajs/core": "^1.0.2-alpha",
+    "typescript": "^5.4.3"
+  },
+  "peerDependencies": {
+    "@venajs/core": "^1.0.2-alpha"
+  },
+  "files": ["build/**/*"]
+}

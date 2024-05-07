@@ -1,4 +1,4 @@
-import { registerComponent, Signal } from 'vena';
+import { registerComponent, Signal } from '@venajs/core';
 import { openFileDialog, openSaveDialog, writeFile } from '../filemanager.js';
 import { DesktopWindowContext } from './desktop-window.js';
 

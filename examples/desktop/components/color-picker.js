@@ -1,4 +1,4 @@
-import { registerComponent, Signal } from 'vena';
+import { registerComponent, Signal } from '@venajs/core';
 
 registerComponent('color-picker', ({ render, attributes, element }) => {
   const initialvalue = attributes.initialvalue?.value || '#000000';

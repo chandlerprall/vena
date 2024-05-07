@@ -1,4 +1,4 @@
-import { html, element, Signal } from 'vena';
+import { html, element, Signal } from '@venajs/core';
 import * as Pad from './components/desktop-app.js';
 
 const liveViews = [];

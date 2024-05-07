@@ -1,4 +1,4 @@
-import { registerComponent, Signal } from 'vena';
+import { registerComponent, Signal } from '@venajs/core';
 
 export const DesktopWindowContext = Symbol('DesktopWindowContext');
 

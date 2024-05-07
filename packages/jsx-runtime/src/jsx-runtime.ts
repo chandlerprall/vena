@@ -1,5 +1,4 @@
-import { Attribute, Hydration, ComponentDefinition, processPart, ElementName, ElementIs } from './runtime.js';
-import { Signal } from './signal';
+import { Attribute, Hydration, ComponentDefinition, processPart, Signal, ElementName, ElementIs } from '@venajs/core';
 
 export const Fragment = Symbol('Fragment');
 

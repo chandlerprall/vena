@@ -1,4 +1,4 @@
-import { registerComponent, Signal, element } from 'vena';
+import { registerComponent, Signal, element } from '@venajs/core';
 
 const background = new Signal('#ffffff');
 const highlight = new Signal('#a9c2ea');

@@ -1,4 +1,4 @@
-import { Signal, registerComponent } from 'vena';
+import { Signal, registerComponent } from '@venajs/core';
 
 export const ProjectBoardContext = Symbol('ProjectBoardContext');
 

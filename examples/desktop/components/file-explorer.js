@@ -1,4 +1,4 @@
-import { registerComponent, element, Signal } from 'vena';
+import { registerComponent, element, Signal } from '@venajs/core';
 import { LiveView } from '../filemanager.js';
 
 registerComponent('file-explorer', ({ render, element: me, attributes }) => {

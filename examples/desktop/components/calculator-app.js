@@ -1,4 +1,4 @@
-import { element as createElement, registerComponent } from 'vena';
+import { element as createElement, registerComponent } from '@venajs/core';
 
 registerComponent('calculator-app', ({ element, render, state }) => {
   const { input, equation, answer } = state({

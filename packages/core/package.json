@@ -1,0 +1,21 @@
+{
+  "name": "@venajs/core",
+  "version": "1.0.2-alpha",
+  "description": "Web component library",
+  "author": "chandler.prall@gmail.com",
+  "license": "OSL-3.0",
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "jsdom-global": "^3.0.2",
+    "typescript": "^5.4.3",
+    "ws": "^8.16.0"
+  },
+  "files": ["build/**/*"]
+}

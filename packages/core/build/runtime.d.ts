@@ -1,4 +1,4 @@
-import { Signal } from './signal.js';
+import { Signal } from './signal';
 export declare class ConnectedNode<ValueType = unknown> {
     #private;
     static getNode(value: any): HTMLElement | Text;

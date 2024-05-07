@@ -1,5 +1,4 @@
-import { ComponentDefinition } from './runtime.js';
-import { Signal } from './signal';
+import { ComponentDefinition, Signal } from '@venajs/core';
 export declare const Fragment: unique symbol;
 export declare function jsx(tagName: keyof JSX.IntrinsicElements | typeof Fragment, { children, ...attributes }: Record<string, any>): ComponentDefinition;
 export declare function jsxs(tagName: keyof JSX.IntrinsicElements | typeof Fragment, attributes: Record<string, any>): ComponentDefinition;

@@ -1,5 +1,5 @@
-import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "vena/jsx-runtime";
-import { registerComponent } from 'vena';
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "@venajs/jsx-runtime";
+import { registerComponent } from '@venajs/core';
 import { ProjectBoardContext } from './project-board.js';
 export default registerComponent('project-card', ({ render, attributes, refs, context }) => {
     const { isDragging } = context[ProjectBoardContext];

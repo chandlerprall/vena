@@ -5,7 +5,7 @@
 Browser DOM APIs are powerful but overly often too verbose to understand at a glance. This library provides an `element` tagged template literal to make creating DOM much easier.
 
 ```javascript
-import {element, Signal} from 'vena';
+import {element, Signal} from '@venajs/core';
 
 const counter = new Signal(0);
 const app = element`
@@ -28,7 +28,7 @@ Components are defined by importing and calling `registerComponent`. The callbac
 * `element` - the instance of the component
 
 ```javascript
-import { registerComponent } from 'vena';
+import { registerComponent } from '@venajs/core';
 registerComponent('my-component', ({ render, attributes, refs }) => {
   const { type, ...rest } = attributes;
   render`
@@ -49,7 +49,7 @@ registerComponent('my-component', ({ render, attributes, refs }) => {
 Local component state is stored in `State` objects. These are subscribable values that can be read and written to, and can be passed directly into parts of the DOM string.
 
 ```javascript
-import {Signal} from 'vena';
+import {Signal} from '@venajs/core';
 
 registerComponent('value-incrementer', ({render}) => {
   // declare a local state value
@@ -74,7 +74,7 @@ registerComponent('value-incrementer', ({render}) => {
 State objects can be declared outside of a component definition and consumed in the same way,
 
 ```javascript
-import {Signal} from 'vena';
+import {Signal} from '@venajs/core';
 
 // declare a state value that all value-incrementer components will share
 // alternatively, this could be defined in a separate file and imported

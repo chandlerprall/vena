@@ -7,7 +7,7 @@ import {
   MeshStandardMaterial,
   MeshToonMaterial,
 } from 'three';
-import { registerComponent, ALL_ATTRIBUTES } from 'vena';
+import { registerComponent, ALL_ATTRIBUTES } from '@venajs/core';
 import { GraphContext } from './context.js';
 
 [
