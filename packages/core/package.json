@@ -1,6 +1,6 @@
 {
   "name": "@venajs/core",
-  "version": "1.0.2-alpha",
+  "version": "1.0.2-beta",
   "description": "Web component library",
   "author": "chandler.prall@gmail.com",
   "license": "OSL-3.0",

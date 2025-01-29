@@ -1,4 +1,4 @@
-import { Signal } from './signal';
+import { Signal } from './signal.js';
 
 export class ConnectedNode<ValueType = unknown> {
   static getNode(value: any) {

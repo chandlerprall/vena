@@ -1,4 +1,4 @@
-import { Signal } from './signal';
+import { Signal } from './signal.js';
 export class ConnectedNode {
     static getNode(value) {
         if (value instanceof HTMLElement) {

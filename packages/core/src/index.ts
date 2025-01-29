@@ -1,2 +1,2 @@
-export * from './signal';
-export * from './runtime';
+export * from './signal.js';
+export * from './runtime.js';
